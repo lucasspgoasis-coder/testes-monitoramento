@@ -1,1045 +1,1095 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitorização de Testes - Fazenda Oásis</title>
-    
-    <!-- Tailwind CSS para estilização moderna -->
+    <title>Registro de Teste - Fazenda Oásis</title>
+    <!-- Tailwind CSS para Estilização de Alta Qualidade -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonte Inter para legibilidade premium -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Ícones Lucide -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Bibliotecas de Exportação -->
+    <!-- Google Fonts: Inter para interface moderna e Playfair para títulos elegantes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2canvas para exportação JPEG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        oasis: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            200: '#bbf7d0',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            800: '#166534',
-                            950: '#052e16',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
+    <!-- jsPDF para exportação em PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
         }
-        .transition-all {
-            transition: all 0.2s ease-in-out;
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom scrollbar para uma interface mais polida */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
-<body class="text-slate-800 flex flex-col min-h-screen">
+<body class="bg-stone-50 text-stone-800 min-h-screen flex flex-col">
 
-    <!-- Cabeçalho -->
-    <header class="bg-gradient-to-r from-oasis-800 to-oasis-950 text-white shadow-md">
+    <!-- CABEÇALHO -->
+    <header class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white shadow-md border-b-4 border-amber-500">
         <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-                <!-- Logótipo sem contorno ou fundo branco -->
-                <div class="flex items-center justify-center">
-                    <img src="https://i.imgur.com/wEozr34.png" alt="Logótipo Fazenda Oásis" class="h-20 w-auto object-contain" onerror="this.style.display='none'">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center justify-center bg-transparent p-0 border-0 outline-none">
+                    <img src="https://i.imgur.com/wEozr34.png" alt="Fazenda Oásis" class="h-16 sm:h-20 w-auto object-contain bg-transparent border-0 outline-none" onerror="this.onerror=null; this.src='https://placehold.co/120x50/ffffff/047857?text=Oásis';">
                 </div>
-                <div class="text-center sm:text-left">
-                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight uppercase">Monitoramento de Testes</h1>
-                    <p class="text-oasis-200 text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                        <i data-lucide="map-pin" class="w-4 h-4"></i> Fazenda Oásis
-                    </p>
+                <div>
+                    <h1 class="text-3xl font-extrabold tracking-tight title-font">Registro de Teste</h1>
+                    <div class="flex items-center gap-3 mt-1 flex-wrap">
+                        <p class="text-emerald-200 text-sm tracking-wider font-medium uppercase">Fazenda Oásis &bull; Gestão Agrícola</p>
+                    </div>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg border border-white/10 text-xs text-oasis-100">
-                    <i data-lucide="calendar-days" class="w-4 h-4"></i>
-                    <span id="header-date">A carregar data...</span>
-                </div>
+            <div class="flex gap-3 text-xs sm:text-sm">
+                <span class="bg-emerald-700/50 px-3 py-1.5 rounded-full border border-emerald-500/30 flex items-center gap-2">
+                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Sistema Ativo
+                </span>
+                <span class="bg-emerald-700/50 px-3 py-1.5 rounded-full border border-emerald-500/30" id="current-date">
+                    --/--/----
+                </span>
             </div>
         </div>
     </header>
 
+    <!-- CONTAINER PRINCIPAL -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
         
-        <!-- Painel de Estatísticas -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Blocos Monitorados</span>
-                    <h3 id="stat-blocks" class="text-2xl font-bold text-slate-800 mt-1 font-mono">0</h3>
-                </div>
-                <div class="p-3 bg-emerald-50 rounded-xl text-emerald-600">
-                    <i data-lucide="grid" class="w-6 h-6"></i>
-                </div>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Testes Aplicados</span>
-                    <h3 id="stat-tests" class="text-2xl font-bold text-slate-800 mt-1 font-mono">0</h3>
-                </div>
-                <div class="p-3 bg-amber-50 rounded-xl text-amber-600">
-                    <i data-lucide="beaker" class="w-6 h-6"></i>
-                </div>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Total em Líquidos</span>
-                    <h3 id="stat-liters" class="text-2xl font-bold text-slate-800 mt-1 font-mono">0 L</h3>
-                </div>
-                <div class="p-3 bg-blue-50 rounded-xl text-blue-600">
-                    <i data-lucide="droplet" class="w-6 h-6"></i>
-                </div>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Total Sólidos</span>
-                    <h3 id="stat-weight" class="text-2xl font-bold text-slate-800 mt-1 font-mono">0 kg</h3>
-                </div>
-                <div class="p-3 bg-purple-50 rounded-xl text-purple-600">
-                    <i data-lucide="scale" class="w-6 h-6"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- GRID DE ENTRADA E PREVIEW -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- Formulário de Aplicação de Testes -->
-            <section class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-fit">
-                <div class="border-b border-slate-100 pb-4 mb-6 flex items-center justify-between">
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="flask-conical" class="text-oasis-700"></i> Nova Monitoração
-                    </h2>
-                    <button type="button" onclick="clearForm()" class="text-xs text-slate-400 hover:text-red-500 font-medium flex items-center gap-1 transition-all">
-                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Limpar Tudo
-                    </button>
+            <!-- COLUNA ESQUERDA: FORMULÁRIO -->
+            <section class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-stone-200/80 p-6">
+                <div class="flex justify-between items-center pb-4 mb-6 border-b border-stone-100">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square text-emerald-600 text-xl"></i>
+                        <h2 class="text-lg font-bold text-stone-800" id="form-title">Dados do Lote e Aplicação</h2>
+                    </div>
+                    <span id="edit-indicator" class="hidden bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-md font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-pen"></i> Editando Modo
+                    </span>
                 </div>
 
-                <form id="test-form" onsubmit="saveRecord(event)" class="space-y-6">
-                    <!-- Data & Semana -->
+                <form id="registro-form" class="space-y-5" onsubmit="event.preventDefault();">
+                    
+                    <!-- Bloco e Número do Teste -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="bloco" class="block text-sm font-semibold text-stone-700 mb-1">
+                                <i class="fa-solid fa-cubes text-emerald-600 mr-1.5"></i>Bloco <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="bloco" name="bloco" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-800 font-medium" required>
+                                <option value="" disabled selected>Selecione o Bloco...</option>
+                                <option value="01">Bloco 01</option>
+                                <option value="02">Bloco 02</option>
+                                <option value="03">Bloco 03</option>
+                                <option value="04">Bloco 04</option>
+                                <option value="05">Bloco 05</option>
+                                <option value="06">Bloco 06</option>
+                                <option value="07">Bloco 07</option>
+                                <option value="08">Bloco 08</option>
+                                <option value="09">Bloco 09</option>
+                                <option value="10">Bloco 10</option>
+                                <option value="11">Bloco 11</option>
+                                <option value="12">Bloco 12</option>
+                                <option value="13">Bloco 13</option>
+                                <option value="14">Bloco 14</option>
+                                <option value="15">Bloco 15</option>
+                                <option value="16">Bloco 16</option>
+                                <option value="17">Bloco 17</option>
+                                <option value="18">Bloco 18</option>
+                                <option value="outros">Outros (Digitar)...</option>
+                            </select>
+                            
+                            <!-- Campo para Bloco Customizado -->
+                            <div id="bloco_outro_container" class="hidden mt-2">
+                                <input type="text" id="bloco_outro" placeholder="Especifique o Bloco..." class="w-full bg-stone-50 border border-stone-300 rounded-lg py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="identificador_teste" class="block text-sm font-semibold text-stone-700 mb-1">
+                                <i class="fa-solid fa-flask text-emerald-600 mr-1.5"></i>Nº do Teste <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="identificador_teste" name="identificador_teste" placeholder="Ex: Teste 01, Teste B..." class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" required>
+                        </div>
+                    </div>
+
+                    <!-- Cultura e Variedade -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="cultura" class="block text-sm font-semibold text-stone-700 mb-1">
+                                <i class="fa-solid fa-seedling text-emerald-600 mr-1.5"></i>Cultura <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="cultura" name="cultura" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-800 font-medium" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                <option value="Brócolis">Brócolis</option>
+                                <option value="Couve Flor">Couve Flor</option>
+                                <option value="outros">Outros (Digitar)...</option>
+                            </select>
+                            
+                            <!-- Campo para Cultura Customizada -->
+                            <div id="cultura_outro_container" class="hidden mt-2">
+                                <input type="text" id="cultura_outro" placeholder="Qual a cultura?" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="variedade" class="block text-sm font-semibold text-stone-700 mb-1">
+                                <i class="fa-solid fa-dna text-emerald-600 mr-1.5"></i>Variedade <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="variedade" name="variedade" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-800 font-medium" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                <option value="Bro 68 syngenta">Bro 68 syngenta</option>
+                                <option value="TSV Master">TSV Master</option>
+                                <option value="Jiraya">Jiraya</option>
+                                <option value="Pharlap">Pharlap</option>
+                                <option value="outros">Outros (Digitar)...</option>
+                            </select>
+
+                            <!-- Campo para Variedade Customizada -->
+                            <div id="variedade_outro_container" class="hidden mt-2">
+                                <input type="text" id="variedade_outro" placeholder="Qual a variedade?" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campo: Aplicação -->
+                    <div>
+                        <label for="aplicacao" class="block text-sm font-semibold text-stone-700 mb-1">
+                            <i class="fa-solid fa-spray-can-sparkles text-emerald-600 mr-1.5"></i>Aplicação <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" id="aplicacao" name="aplicacao" placeholder="Ex: Nutrição Foliar, Defensivo, Enraizador..." class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" required>
+                    </div>
+
+                    <!-- Grid: Total Mudas e Total Canteiros -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="reg-date" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Data</label>
-                            <input type="date" id="reg-date" required onchange="updateWeekField(this.value)"
-                                   class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600">
+                            <label for="total_mudas" class="block text-sm font-semibold text-stone-700 mb-1">
+                                <i class="fa-solid fa-arrow-up-9-1 text-emerald-600 mr-1.5"></i>Total Mudas <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="number" id="total_mudas" name="total_mudas" min="1" placeholder="Ex: 500" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" required>
                         </div>
                         <div>
-                            <label for="reg-week" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Semana (Automática)</label>
-                            <input type="text" id="reg-week" readonly placeholder="Calculada..."
-                                   class="w-full rounded-xl border border-slate-200 bg-slate-50 text-slate-500 px-3 py-2.5 text-sm font-semibold text-center focus:outline-none">
+                            <label for="total_canteiros" class="block text-sm font-semibold text-stone-700 mb-1">
+                                <i class="fa-solid fa-grip-lines text-emerald-600 mr-1.5"></i>Total Canteiros <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="number" id="total_canteiros" name="total_canteiros" min="1" placeholder="Ex: 10" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" required>
                         </div>
                     </div>
 
-                    <!-- Bloco Dropdown -->
-                    <div>
-                        <label for="reg-block" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Bloco de Aplicação</label>
-                        <select id="reg-block" required onchange="handleDropdownChange('reg-block', 'reg-block-custom-container')"
-                                class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 bg-white">
-                            <option value="" disabled selected>Escolher o bloco...</option>
-                            <option value="01">Bloco 01</option>
-                            <option value="02">Bloco 02</option>
-                            <option value="03">Bloco 03</option>
-                            <option value="04">Bloco 04</option>
-                            <option value="05">Bloco 05</option>
-                            <option value="06">Bloco 06</option>
-                            <option value="07">Bloco 07</option>
-                            <option value="08">Bloco 08</option>
-                            <option value="09">Bloco 09</option>
-                            <option value="10">Bloco 10</option>
-                            <option value="11">Bloco 11</option>
-                            <option value="12">Bloco 12</option>
-                            <option value="13">Bloco 13</option>
-                            <option value="14">Bloco 14</option>
-                            <option value="15">Bloco 15</option>
-                            <option value="16">Bloco 16</option>
-                            <option value="17">Bloco 17</option>
-                            <option value="18">Bloco 18</option>
-                            <option value="Outros">Outros...</option>
-                        </select>
+                    <!-- Grid: Dosagem e Unidade -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="dosagem" class="block text-sm font-semibold text-stone-700 mb-1">
+                                <i class="fa-solid fa-vial text-emerald-600 mr-1.5"></i>Dosagem <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="number" step="0.001" min="0.001" id="dosagem" name="dosagem" placeholder="Ex: 2.5" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" required>
+                        </div>
+                        <div>
+                            <label for="unidade" class="block text-sm font-semibold text-stone-700 mb-1">
+                                <i class="fa-solid fa-weight-scale text-emerald-600 mr-1.5"></i>Unidade <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="unidade" name="unidade" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-800 font-medium" required>
+                                <option value="" disabled selected>Unid...</option>
+                                <option value="g">Gramas (g)</option>
+                                <option value="kg">Quilos (kg)</option>
+                                <option value="L">Litros (L)</option>
+                                <option value="ml">Mililitros (ml)</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- Bloco Customizado Oculto -->
-                    <div id="reg-block-custom-container" class="hidden">
-                        <label for="reg-block-custom" class="block text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-1.5">Introduza o Nome do Bloco</label>
-                        <input type="text" id="reg-block-custom" placeholder="Ex: Área de Teste Norte"
-                               class="w-full rounded-xl border border-emerald-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
-                    </div>
-
-                    <!-- Secção Dinâmica de Múltiplos Testes -->
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between border-t border-slate-100 pt-4">
-                            <h3 class="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                <i data-lucide="beaker" class="w-4 h-4 text-emerald-600"></i> Testes Aplicados
-                            </h3>
-                            <button type="button" onclick="addTestRow()" 
-                                    class="text-xs bg-oasis-100 hover:bg-oasis-200 text-oasis-800 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all">
-                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Adicionar Teste
+                    <!-- Botões de Salvar, Cancelar e Limpar -->
+                    <div class="flex flex-col gap-3 pt-2">
+                        <div class="flex gap-3">
+                            <button type="button" id="btn-cancelar" onclick="cancelEditing()" class="hidden flex-1 py-2 px-4 bg-stone-200 hover:bg-stone-300 text-stone-700 font-semibold rounded-lg transition-colors border border-stone-300 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-xmark"></i> Cancelar
+                            </button>
+                            <button type="button" id="btn-limpar" onclick="resetForm()" class="flex-1 py-2 px-4 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-lg transition-colors border border-stone-200 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-eraser"></i> Limpar
                             </button>
                         </div>
-
-                        <!-- Contentor de Testes Dinâmicos -->
-                        <div id="tests-container" class="space-y-6">
-                            <!-- Os subtestes serão inseridos dinamicamente aqui -->
-                        </div>
-                    </div>
-
-                    <!-- Botão de Envio -->
-                    <div class="pt-4 border-t border-slate-100 space-y-3">
-                        <button type="submit" class="w-full bg-oasis-700 hover:bg-oasis-800 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
-                            <i data-lucide="save"></i> Salvar Monitoramento do Bloco
+                        <button type="button" id="btn-salvar" onclick="saveToHistory()" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk" id="btn-salvar-icon"></i> <span id="btn-salvar-text">Salvar Teste</span>
                         </button>
-                        <div id="sync-status" class="hidden text-center text-xs font-semibold text-slate-500 flex items-center justify-center gap-2 bg-slate-50 py-2 rounded-lg border border-slate-100">
-                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin text-emerald-600"></i>
-                            <span>Sincronizando registros dinâmicos na planilha...</span>
-                        </div>
                     </div>
+
                 </form>
             </section>
 
-            <!-- Registos Salvos -->
-            <section class="lg:col-span-7 space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-6">
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                <i data-lucide="notebook-tabs" class="text-oasis-700"></i> Histórico de Monitoramentos
-                            </h2>
-                            <p class="text-xs text-slate-400 mt-1">Aplicações, doses e avaliações registradas.</p>
-                        </div>
-                        
-                        <div class="flex items-center gap-2">
-                            <button onclick="exportAllToPDF()" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all">
-                                <i data-lucide="file-text" class="w-4 h-4"></i> PDF Geral
-                            </button>
-                            <button onclick="exportAllToJPEG()" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all">
-                                <i data-lucide="image" class="w-4 h-4"></i> JPEG Geral
-                            </button>
-                        </div>
+            <!-- COLUNA DIREITA: CARTÃO PREVIEW PARA EXPORTAÇÃO -->
+            <section class="lg:col-span-7 flex flex-col gap-6">
+                
+                <!-- Ações de Exportação -->
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200/80 p-4 flex flex-wrap gap-3 justify-between items-center">
+                    <span class="text-sm font-semibold text-stone-600 flex items-center gap-2">
+                        <i class="fa-solid fa-file-export text-emerald-600"></i>
+                        Exportar Relatório Atual:
+                    </span>
+                    <div class="flex gap-2">
+                        <button onclick="exportAsJPEG()" class="bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-image text-base"></i> Baixar JPEG
+                        </button>
+                        <button onclick="exportAsPDF()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-file-pdf text-base"></i> Baixar PDF
+                        </button>
                     </div>
+                </div>
 
-                    <!-- Conteúdo Dinâmico -->
-                    <div id="records-list-container">
-                        <!-- Estado Vazio -->
-                        <div id="empty-state" class="py-16 flex flex-col items-center justify-center text-center">
-                            <div class="bg-slate-50 p-4 rounded-full mb-4">
-                                <i data-lucide="beaker" class="w-12 h-12 text-slate-300"></i>
+                <!-- RELATÓRIO PREVIEW (O container exato que será capturado pelas bibliotecas) -->
+                <div id="capture-area" class="bg-white rounded-2xl border-2 border-stone-300/60 shadow-lg p-8 relative overflow-hidden flex flex-col justify-between" style="min-height: 520px;">
+                    
+                    <!-- Elementos Decorativos de Background -->
+                    <div class="absolute top-0 right-0 w-48 h-48 bg-emerald-50/50 rounded-full -mr-16 -mt-16 -z-0"></div>
+                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-amber-50/50 rounded-full -ml-12 -mb-12 -z-0"></div>
+
+                    <div class="relative z-10">
+                        <!-- Cabeçalho do Cartão -->
+                        <div class="flex justify-between items-start border-b-2 border-emerald-800/20 pb-5">
+                            <div>
+                                <h3 class="text-stone-500 text-xs font-bold uppercase tracking-widest">Relatório Técnico</h3>
+                                <h2 class="text-2xl font-bold text-emerald-900 title-font mt-0.5">Registro de Teste</h2>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <img src="https://i.imgur.com/wEozr34.png" alt="Fazenda Oásis" class="h-8 w-auto object-contain bg-transparent border-0 outline-none" onerror="this.onerror=null; this.classList.add('hidden');">
+                                    <span class="text-amber-700 text-xs font-extrabold tracking-wider uppercase title-font">Fazenda Oásis</span>
+                                </div>
                             </div>
-                            <h3 class="text-sm font-semibold text-slate-700">Nenhum bloco monitorado</h3>
-                            <p class="text-xs text-slate-400 max-w-xs mt-1">Utilize o formulário ao lado para registrar o primeiro conjunto de testes aplicados.</p>
+                            <div class="text-right flex flex-col items-end">
+                                <span class="bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider block" id="preview-status">
+                                    Em Preenchimento
+                                </span>
+                                <p class="text-stone-400 text-[10px] mt-2" id="preview-time">Gerado agora</p>
+                            </div>
                         </div>
-                        
-                        <!-- Lista de Cards -->
-                        <div id="records-list" class="space-y-4 hidden"></div>
+
+                        <!-- Indicador Visual do Bloco Selecionado -->
+                        <div class="mt-6 bg-gradient-to-r from-emerald-50 to-teal-50/60 p-4 rounded-xl border border-emerald-100 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-emerald-600 text-white p-2.5 rounded-lg">
+                                    <i class="fa-solid fa-cubes text-lg"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-stone-500 font-medium uppercase">Setor / Identificação do Teste</p>
+                                    <p class="text-base font-bold text-stone-800" id="preview-bloco-teste">---</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-stone-500 font-medium uppercase">Tipo de Aplicação</p>
+                                <p class="text-base font-bold text-stone-800" id="preview-aplicacao">---</p>
+                            </div>
+                        </div>
+
+                        <!-- Grid de Dados de Atividade -->
+                        <div class="grid grid-cols-2 gap-4 mt-6">
+                            
+                            <!-- Card Total Mudas -->
+                            <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200/60 flex items-center gap-3">
+                                <div class="text-emerald-700 bg-emerald-100/65 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold shrink-0">
+                                    <i class="fa-solid fa-seedling"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-stone-500 block font-medium uppercase">Total de Mudas</span>
+                                    <span class="text-lg font-extrabold text-stone-800" id="preview-total-mudas">0</span>
+                                </div>
+                            </div>
+
+                            <!-- Card Total Canteiros -->
+                            <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200/60 flex items-center gap-3">
+                                <div class="text-emerald-700 bg-emerald-100/65 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold shrink-0">
+                                    <i class="fa-solid fa-grip-lines"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-stone-500 block font-medium uppercase">Canteiros Ativos</span>
+                                    <span class="text-lg font-extrabold text-stone-800" id="preview-total-canteiros">0</span>
+                                </div>
+                            </div>
+
+                            <!-- Card Cultura & Variedade -->
+                            <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200/60 flex items-center gap-3 col-span-2">
+                                <div class="text-emerald-700 bg-emerald-100/65 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold shrink-0">
+                                    <i class="fa-solid fa-leaf"></i>
+                                </div>
+                                <div class="overflow-hidden w-full">
+                                    <span class="text-[11px] text-stone-500 block font-medium uppercase">Cultura / Variedade</span>
+                                    <span class="text-base font-extrabold text-stone-800 block truncate" id="preview-especificacao-muda">---</span>
+                                </div>
+                            </div>
+
+                            <!-- Card Dosagem Científica -->
+                            <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200/60 flex items-center gap-3 col-span-2">
+                                <div class="text-amber-700 bg-amber-100/65 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold shrink-0">
+                                    <i class="fa-solid fa-vial"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-stone-500 block font-medium uppercase">Dosagem / Unidade Aplicada</span>
+                                    <span class="text-base font-extrabold text-stone-800" id="preview-dosagem-unidade">0 g</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- KPI: Inteligência do Teste -->
+                        <div class="mt-6 p-4 bg-amber-500/10 rounded-xl border border-amber-500/20 grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-[11px] text-stone-500 font-semibold uppercase">Mudas / Canteiro</p>
+                                <p class="text-lg font-extrabold text-amber-900" id="preview-calculo-densidade">0.0</p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] text-stone-500 font-semibold uppercase">Proporção Dose/Muda</p>
+                                <p class="text-lg font-extrabold text-amber-900" id="preview-calculo-dose-proporcional">0.00</p>
+                            </div>
+                        </div>
+
                     </div>
+
+                    <!-- Rodapé do Cartão Autenticado -->
+                    <div class="border-t border-stone-150 pt-5 mt-6 flex justify-between items-center text-[11px] text-stone-500 relative z-10">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+                            <span>Registro Autenticado e Assinado</span>
+                        </div>
+                        <div class="font-bold text-stone-700">
+                            F. OÁSIS TECNOLOGIA
+                        </div>
+                    </div>
+
                 </div>
+
             </section>
+
         </div>
-    </main>
 
-    <!-- Container do Toast -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
-
-    <!-- Template para Impressão e Exportação -->
-    <div id="export-template" class="hidden">
-        <div id="print-area" class="p-8 bg-white max-w-4xl mx-auto text-slate-800 font-sans" style="width: 800px; box-sizing: border-box;">
-            <!-- Cabeçalho de Impressão Sem Contorno Branco -->
-            <div class="pb-6 mb-6 flex justify-between items-center border-b-2 border-emerald-700/30">
-                <div class="flex items-center gap-5">
-                    <img src="https://i.imgur.com/wEozr34.png" alt="Logo" class="h-20 w-auto object-contain" onerror="this.style.display='none'">
+        <!-- SEÇÃO: HISTÓRICO DE REGISTROS -->
+        <section class="mt-12 bg-white rounded-2xl shadow-sm border border-stone-200/80 p-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 mb-6 border-b border-stone-100">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-emerald-600 text-xl"></i>
                     <div>
-                        <h1 class="text-2xl font-bold text-emerald-950 uppercase tracking-tight">Relatório de Monitoramento</h1>
-                        <p class="text-emerald-700 text-sm font-semibold tracking-wider uppercase">Fazenda Oásis</p>
+                        <h2 class="text-lg font-bold text-stone-800">Histórico de Testes Recentes</h2>
+                        <p class="text-xs text-stone-500">Registros gravados localmente neste navegador</p>
                     </div>
                 </div>
-                <div class="text-right text-xs text-slate-500">
-                    <p id="print-gen-date" class="font-medium text-slate-700">Gerado em: --/--/----</p>
-                    <p class="text-emerald-600 font-semibold">Monitoramento de Testes & Aplicações</p>
-                </div>
+                <button onclick="clearHistory()" class="text-xs font-semibold text-rose-600 hover:text-rose-700 border border-rose-200 hover:bg-rose-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                    <i class="fa-solid fa-trash-can"></i> Limpar Histórico
+                </button>
             </div>
 
-            <!-- Conteúdo de Impressão Dinâmico -->
-            <div id="print-content" class="space-y-6"></div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-stone-200 text-stone-500 text-xs font-semibold uppercase tracking-wider bg-stone-50">
+                            <th class="py-3 px-4 rounded-l-lg">Data / Hora</th>
+                            <th class="py-3 px-4">Local / Teste</th>
+                            <th class="py-3 px-4">Cultura / Variedade</th>
+                            <th class="py-3 px-4">Aplicação</th>
+                            <th class="py-3 px-4">Mudas / Canteiros</th>
+                            <th class="py-3 px-4 text-center">Dosagem</th>
+                            <th class="py-3 px-4 text-right rounded-r-lg">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-rows" class="divide-y divide-stone-100 text-sm">
+                        <!-- Linhas dinâmicas preenchidas via JS -->
+                    </tbody>
+                </table>
+                
+                <!-- Estado Vazio -->
+                <div id="no-history-state" class="py-12 text-center text-stone-400">
+                    <i class="fa-solid fa-folder-open text-4xl mb-3 text-stone-300"></i>
+                    <p class="font-medium text-stone-500">Nenhum registro encontrado.</p>
+                    <p class="text-xs text-stone-400 mt-1">Preencha o formulário acima e clique em "Salvar Teste".</p>
+                </div>
+            </div>
+        </section>
 
-            <!-- Rodapé -->
-            <div class="border-t border-slate-200 pt-6 mt-12 flex justify-between items-center text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
-                <p>Fazenda Oásis - Gestão Agrícola Integrada</p>
-                <p>Relatório de Campo</p>
+    </main>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MODAL DE CONFIRMAÇÃO SEGURO (Substituto do window.confirm) -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-stone-200 transform scale-95 transition-all duration-300">
+            <div class="flex items-center gap-3 text-amber-600 mb-4">
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                <h3 class="text-lg font-bold text-stone-900">Confirmar Ação</h3>
+            </div>
+            <p id="confirm-modal-message" class="text-sm text-stone-600 mb-6">Deseja realmente prosseguir?</p>
+            <div class="flex justify-end gap-3">
+                <button id="confirm-modal-cancel" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-lg text-sm transition-colors">
+                    Cancelar
+                </button>
+                <button id="confirm-modal-confirm" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-lg text-sm transition-colors shadow-sm">
+                    Confirmar
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Rodapé Principal -->
-    <footer class="bg-slate-900 text-slate-400 py-6 mt-12 border-t border-slate-800 text-center text-xs">
-        <div class="max-w-7xl mx-auto px-4">
-            <p>&copy; 2026 Fazenda Oásis. Painel Geral de Monitoramento de Testes.</p>
+    <!-- RODAPÉ DA PÁGINA -->
+    <footer class="bg-stone-900 text-stone-400 text-xs py-8 border-t border-stone-850 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <div>
+                <p class="font-bold text-stone-300 title-font text-sm">Fazenda Oásis &copy; 2026</p>
+                <p class="mt-1 text-stone-500">Tecnologia avançada para monitoramento e controle de produção hortifrúti.</p>
+            </div>
+            <div>
+                <span class="bg-stone-800 px-3 py-1.5 rounded-md border border-stone-700/60 inline-block">
+                    Desenvolvido para uso interno administrativo.
+                </span>
+            </div>
         </div>
     </footer>
 
+    <!-- SCRIPTS LÓGICOS -->
     <script>
-        // --- ESTADO GLOBAL ---
-        let testRecords = [];
-        let testCounter = 0;
-        
-        // Lucas, quando você me enviar a URL do Apps Script, colocaremos ela diretamente aqui:
-        let googleSheetsWebhookUrl = 'SUA_URL_DO_APPS_SCRIPT_AQUI';
+        // CONFIGURAÇÕES E ESTADOS GLOBAIS
+        let historyData = [];
+        let editingId = null; // Guarda o ID do teste que está sendo editado
 
+        // Inicialização do aplicativo
         window.onload = function() {
-            lucide.createIcons();
-            
-            // Data atual por padrão
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('reg-date').value = today;
-            updateWeekField(today);
+            // Definir data atual no topo
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('current-date').innerText = formattedDate;
+            document.getElementById('preview-time').innerText = `Gerado em ${formattedDate} às ${today.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
 
-            // Carrega se você já salvou alguma vez no localStorage
-            const savedUrl = localStorage.getItem('oasis_test_webhook_url');
-            if (savedUrl && googleSheetsWebhookUrl === 'SUA_URL_DO_APPS_SCRIPT_AQUI') {
-                googleSheetsWebhookUrl = savedUrl;
-            }
+            // Carregar Histórico existente
+            loadHistory();
 
-            // Data de exibição no Cabeçalho
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('header-date').innerText = new Date().toLocaleDateString('pt-BR', options);
-
-            // Adicionar primeiro subteste padrão
-            addTestRow();
-
-            updateStats();
+            // Configurar Event Listeners para Atualização em Tempo Real do Preview
+            setupRealtimePreview();
         };
 
-        // --- SISTEMA DE NOTIFICAÇÕES (TOAST) ---
-        function showToast(message, type = 'success') {
+        // SETUP DOS EVENT LISTENERS PARA PREVIEW DINÂMICO
+        function setupRealtimePreview() {
+            const trackingIds = [
+                'bloco', 'bloco_outro', 'identificador_teste', 
+                'cultura', 'cultura_outro', 'variedade', 'variedade_outro',
+                'aplicacao', 'total_mudas', 'total_canteiros', 'dosagem', 'unidade'
+            ];
+
+            trackingIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', () => updatePreview());
+                    element.addEventListener('change', () => {
+                        // Tratar campos 'Outros...' de forma proativa
+                        handleOutrosTrigger();
+                        updatePreview();
+                    });
+                }
+            });
+        }
+
+        // CONTROLADOR DE INPUTS DE DIGITAÇÃO LIVRE ("OUTROS")
+        function handleOutrosTrigger() {
+            // Bloco outro
+            const bloco = document.getElementById('bloco');
+            const blocoOutroCont = document.getElementById('bloco_outro_container');
+            const blocoOutro = document.getElementById('bloco_outro');
+            if (bloco.value === 'outros') {
+                blocoOutroCont.classList.remove('hidden');
+                blocoOutro.setAttribute('required', 'true');
+            } else {
+                blocoOutroCont.classList.add('hidden');
+                blocoOutro.removeAttribute('required');
+            }
+
+            // Cultura outro
+            const cultura = document.getElementById('cultura');
+            const culturaOutroCont = document.getElementById('cultura_outro_container');
+            const culturaOutro = document.getElementById('cultura_outro');
+            if (cultura.value === 'outros') {
+                culturaOutroCont.classList.remove('hidden');
+                culturaOutro.setAttribute('required', 'true');
+            } else {
+                culturaOutroCont.classList.add('hidden');
+                culturaOutro.removeAttribute('required');
+            }
+
+            // Variedade outro
+            const variedade = document.getElementById('variedade');
+            const variedadeOutroCont = document.getElementById('variedade_outro_container');
+            const variedadeOutro = document.getElementById('variedade_outro');
+            if (variedade.value === 'outros') {
+                variedadeOutroCont.classList.remove('hidden');
+                variedadeOutro.setAttribute('required', 'true');
+            } else {
+                variedadeOutroCont.classList.add('hidden');
+                variedadeOutro.removeAttribute('required');
+            }
+        }
+
+        // ATUALIZA A PRÉ-VISUALIZAÇÃO DO CARD INTEIRO
+        function updatePreview() {
+            // Bloco
+            const blocoValue = document.getElementById('bloco').value;
+            const blocoOutroValue = document.getElementById('bloco_outro').value;
+            const blocoFinal = (blocoValue === 'outros') ? blocoOutroValue : (blocoValue ? `Bloco ${blocoValue}` : '');
+
+            // Identificação do Teste
+            const testeId = document.getElementById('identificador_teste').value;
+
+            // Bloco + Identificação
+            const labelBlocoTeste = document.getElementById('preview-bloco-teste');
+            if (blocoFinal || testeId) {
+                labelBlocoTeste.innerText = `${blocoFinal || '---'} / ${testeId || '---'}`;
+            } else {
+                labelBlocoTeste.innerText = '---';
+            }
+
+            // Cultura
+            const culturaValue = document.getElementById('cultura').value;
+            const culturaOutroValue = document.getElementById('cultura_outro').value;
+            const culturaFinal = (culturaValue === 'outros') ? culturaOutroValue : culturaValue;
+
+            // Variedade
+            const variedadeValue = document.getElementById('variedade').value;
+            const variedadeOutroValue = document.getElementById('variedade_outro').value;
+            const variedadeFinal = (variedadeValue === 'outros') ? variedadeOutroValue : variedadeValue;
+
+            // Cultura + Variedade na Especificação
+            const specEl = document.getElementById('preview-especificacao-muda');
+            if (culturaFinal || variedadeFinal) {
+                specEl.innerText = `${culturaFinal || 'Cultura indefinida'} - ${variedadeFinal || 'Variedade indefinida'}`;
+            } else {
+                specEl.innerText = '---';
+            }
+
+            // Aplicação
+            const aplicacao = document.getElementById('aplicacao').value;
+            document.getElementById('preview-aplicacao').innerText = aplicacao || '---';
+
+            // Total Mudas e Canteiros
+            const mudas = parseInt(document.getElementById('total_mudas').value) || 0;
+            const canteiros = parseInt(document.getElementById('total_canteiros').value) || 0;
+            document.getElementById('preview-total-mudas').innerText = mudas.toLocaleString('pt-BR');
+            document.getElementById('preview-total-canteiros').innerText = canteiros.toLocaleString('pt-BR');
+
+            // Dosagem e Unidade
+            const dosagem = parseFloat(document.getElementById('dosagem').value) || 0;
+            const unidade = document.getElementById('unidade').value || '';
+            document.getElementById('preview-dosagem-unidade').innerText = `${dosagem} ${unidade || 'g'}`;
+
+            // Cálculos Científicos
+            // 1. Mudas por canteiro
+            const densidadeEl = document.getElementById('preview-calculo-densidade');
+            if (canteiros > 0) {
+                densidadeEl.innerText = `${(mudas / canteiros).toFixed(1)} mudas`;
+            } else {
+                densidadeEl.innerText = '0.0';
+            }
+
+            // 2. Proporção Dose / Muda
+            const doseMudaEl = document.getElementById('preview-calculo-dose-proporcional');
+            if (mudas > 0 && dosagem > 0) {
+                doseMudaEl.innerText = `${(dosagem / mudas).toFixed(4)} ${unidade}/muda`;
+            } else {
+                doseMudaEl.innerText = '0.00';
+            }
+
+            updatePreviewStatus();
+        }
+
+        // Muda o status visual do preview baseado no preenchimento do formulário
+        function updatePreviewStatus() {
+            const form = document.getElementById('registro-form');
+            const previewStatus = document.getElementById('preview-status');
+            
+            if (form.checkValidity()) {
+                if (editingId) {
+                    previewStatus.innerText = "Atualizando";
+                    previewStatus.className = "bg-amber-500 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider block";
+                } else {
+                    previewStatus.innerText = "Pronto";
+                    previewStatus.className = "bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider block";
+                }
+            } else {
+                previewStatus.innerText = "Em Preenchimento";
+                previewStatus.className = "bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider block";
+            }
+        }
+
+        // LIMPAR FORMULÁRIO COMPLETO
+        function resetForm() {
+            document.getElementById('registro-form').reset();
+            
+            // Forçar ocultação dos subcampos customizados
+            document.getElementById('bloco_outro_container').classList.add('hidden');
+            document.getElementById('cultura_outro_container').classList.add('hidden');
+            document.getElementById('variedade_outro_container').classList.add('hidden');
+
+            // Resetar Elementos do Preview manualmente
+            document.getElementById('preview-bloco-teste').innerText = '---';
+            document.getElementById('preview-aplicacao').innerText = '---';
+            document.getElementById('preview-total-mudas').innerText = '0';
+            document.getElementById('preview-total-canteiros').innerText = '0';
+            document.getElementById('preview-especificacao-muda').innerText = '---';
+            document.getElementById('preview-dosagem-unidade').innerText = '0 g';
+            document.getElementById('preview-calculo-densidade').innerText = '0.0';
+            document.getElementById('preview-calculo-dose-proporcional').innerText = '0.00';
+            
+            updatePreviewStatus();
+            showToast('Formulário limpo!', 'info');
+        }
+
+        // CANCELAR EDIÇÃO ATIVA
+        function cancelEditing() {
+            editingId = null;
+            document.getElementById('edit-indicator').classList.add('hidden');
+            document.getElementById('btn-cancelar').classList.add('hidden');
+            
+            // Restaurar textos padrões do botão de salvar
+            document.getElementById('btn-salvar-text').innerText = "Salvar Teste";
+            document.getElementById('btn-salvar-icon').className = "fa-solid fa-floppy-disk";
+            document.getElementById('form-title').innerText = "Dados do Lote e Aplicação";
+            
+            resetForm();
+            showToast('Edição cancelada.', 'info');
+        }
+
+        // SALVAR NO HISTÓRICO (localStorage) - CRIAÇÃO E ATUALIZAÇÃO
+        function saveToHistory() {
+            const form = document.getElementById('registro-form');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                showToast('Preencha todos os campos obrigatórios (*)', 'error');
+                return;
+            }
+
+            // Obter e formatar valor final de Bloco
+            const bValue = document.getElementById('bloco').value;
+            const bOutro = document.getElementById('bloco_outro').value;
+            const blocoFinal = (bValue === 'outros') ? bOutro : bValue;
+
+            // Obter e formatar valor de Cultura
+            const cValue = document.getElementById('cultura').value;
+            const cOutro = document.getElementById('cultura_outro').value;
+            const culturaFinal = (cValue === 'outros') ? cOutro : cValue;
+
+            // Obter e formatar valor de Variedade
+            const vValue = document.getElementById('variedade').value;
+            const vOutro = document.getElementById('variedade_outro').value;
+            const variedadeFinal = (vValue === 'outros') ? vOutro : vValue;
+
+            const registroDados = {
+                bloco: blocoFinal,
+                bloco_selecionado: bValue, // Salva o estado do select para edições futuras
+                bloco_digitado: bOutro,
+                identificador_teste: document.getElementById('identificador_teste').value,
+                cultura: culturaFinal,
+                cultura_selecionada: cValue,
+                cultura_digitada: cOutro,
+                variedade: variedadeFinal,
+                variedade_selecionada: vValue,
+                variedade_digitada: vOutro,
+                aplicacao: document.getElementById('aplicacao').value,
+                total_mudas: parseInt(document.getElementById('total_mudas').value),
+                total_canteiros: parseInt(document.getElementById('total_canteiros').value),
+                dosagem: parseFloat(document.getElementById('dosagem').value),
+                unidade: document.getElementById('unidade').value
+            };
+
+            if (editingId !== null) {
+                // ATUALIZAR REGISTRO EXISTENTE
+                const index = historyData.findIndex(item => item.id === editingId);
+                if (index !== -1) {
+                    historyData[index] = {
+                        ...historyData[index],
+                        ...registroDados,
+                        data_modificacao: new Date().toLocaleString('pt-BR')
+                    };
+                    localStorage.setItem('fazenda_oasis_testes', JSON.stringify(historyData));
+                    showToast('Registro atualizado com sucesso!', 'success');
+                }
+                
+                // Sair do modo edição
+                editingId = null;
+                document.getElementById('edit-indicator').classList.add('hidden');
+                document.getElementById('btn-cancelar').classList.add('hidden');
+                document.getElementById('btn-salvar-text').innerText = "Salvar Teste";
+                document.getElementById('btn-salvar-icon').className = "fa-solid fa-floppy-disk";
+                document.getElementById('form-title').innerText = "Dados do Lote e Aplicação";
+            } else {
+                // SALVAR NOVO REGISTRO
+                const novoRegistro = {
+                    id: Date.now(),
+                    data: new Date().toLocaleString('pt-BR'),
+                    ...registroDados
+                };
+
+                historyData.unshift(novoRegistro);
+                localStorage.setItem('fazenda_oasis_testes', JSON.stringify(historyData));
+                showToast('Teste registrado no histórico!', 'success');
+            }
+
+            resetForm();
+            renderHistoryTable();
+        }
+
+        // CARREGAR HISTÓRICO GERAL
+        function loadHistory() {
+            const stored = localStorage.getItem('fazenda_oasis_testes');
+            if (stored) {
+                historyData = JSON.parse(stored);
+            } else {
+                historyData = [];
+            }
+            renderHistoryTable();
+        }
+
+        // INICIAR EDICAO DO REGISTRO
+        function editRecord(id) {
+            const registro = historyData.find(item => item.id === id);
+            if (!registro) return;
+
+            // Definir estado de edição
+            editingId = id;
+            document.getElementById('edit-indicator').classList.remove('hidden');
+            document.getElementById('btn-cancelar').classList.remove('hidden');
+            document.getElementById('btn-salvar-text').innerText = "Atualizar Registro";
+            document.getElementById('btn-salvar-icon').className = "fa-solid fa-arrows-rotate";
+            document.getElementById('form-title').innerText = "Editar Detalhes do Teste";
+
+            // Preencher Bloco
+            const blocoSelect = document.getElementById('bloco');
+            const blocoOutroInput = document.getElementById('bloco_outro');
+            if (registro.bloco_selecionado) {
+                blocoSelect.value = registro.bloco_selecionado;
+                blocoOutroInput.value = registro.bloco_digitado || '';
+            } else {
+                // Legado ou Fallback para correspondências diretas
+                const options = Array.from(blocoSelect.options).map(o => o.value);
+                if (options.includes(registro.bloco)) {
+                    blocoSelect.value = registro.bloco;
+                    blocoOutroInput.value = '';
+                } else {
+                    blocoSelect.value = 'outros';
+                    blocoOutroInput.value = registro.bloco;
+                }
+            }
+
+            // Preencher Teste ID
+            document.getElementById('identificador_teste').value = registro.identificador_teste || 'Teste 1';
+
+            // Preencher Cultura
+            const culturaSelect = document.getElementById('cultura');
+            const culturaOutroInput = document.getElementById('cultura_outro');
+            if (registro.cultura_selecionada) {
+                culturaSelect.value = registro.cultura_selecionada;
+                culturaOutroInput.value = registro.cultura_digitada || '';
+            } else {
+                if (registro.cultura === 'Brócolis' || registro.cultura === 'Couve Flor') {
+                    culturaSelect.value = registro.cultura;
+                    culturaOutroInput.value = '';
+                } else {
+                    culturaSelect.value = 'outros';
+                    culturaOutroInput.value = registro.cultura || '';
+                }
+            }
+
+            // Preencher Variedade
+            const variedadeSelect = document.getElementById('variedade');
+            const variedadeOutroInput = document.getElementById('variedade_outro');
+            if (registro.variedade_selecionada) {
+                variedadeSelect.value = registro.variedade_selecionada;
+                variedadeOutroInput.value = registro.variedade_digitada || '';
+            } else {
+                const optVariedades = ["Bro 68 syngenta", "TSV Master", "Jiraya", "Pharlap"];
+                if (optVariedades.includes(registro.variedade)) {
+                    variedadeSelect.value = registro.variedade;
+                    variedadeOutroInput.value = '';
+                } else {
+                    variedadeSelect.value = 'outros';
+                    variedadeOutroInput.value = registro.variedade || '';
+                }
+            }
+
+            // Preencher campos remanescentes
+            document.getElementById('aplicacao').value = registro.aplicacao;
+            document.getElementById('total_mudas').value = registro.total_mudas;
+            document.getElementById('total_canteiros').value = registro.total_canteiros;
+            document.getElementById('dosagem').value = registro.dosagem;
+            document.getElementById('unidade').value = registro.unidade;
+
+            // Atualizar visibilidade dos inputs dependentes de "outros" e redefinir o preview
+            handleOutrosTrigger();
+            updatePreview();
+
+            // Mapear visualmente o status
+            updatePreviewStatus();
+
+            // Scroll suave até o topo do formulário
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast('Dados carregados para edição!', 'info');
+        }
+
+        // CARREGA UM REGISTRO PARA VISUALIZAÇÃO DIRETA NO CARD (SEM COLOCAR EM MODO EDICAO)
+        function loadRecordToPreview(id) {
+            const registro = historyData.find(item => item.id === id);
+            if (!registro) return;
+
+            // Carrega temporariamente no form para forçar a renderização do preview
+            document.getElementById('bloco').value = registro.bloco_selecionado || (registro.bloco.length <= 2 ? registro.bloco : 'outros');
+            document.getElementById('bloco_outro').value = registro.bloco_digitado || (registro.bloco.length > 2 ? registro.bloco : '');
+            
+            document.getElementById('identificador_teste').value = registro.identificador_teste || 'Teste 1';
+            
+            document.getElementById('cultura').value = registro.cultura_selecionada || (['Brócolis', 'Couve Flor'].includes(registro.cultura) ? registro.cultura : 'outros');
+            document.getElementById('cultura_outro').value = registro.cultura_digitada || (!['Brócolis', 'Couve Flor'].includes(registro.cultura) ? registro.cultura : '');
+            
+            document.getElementById('variedade').value = registro.variedade_selecionada || (["Bro 68 syngenta", "TSV Master", "Jiraya", "Pharlap"].includes(registro.variedade) ? registro.variedade : 'outros');
+            document.getElementById('variedade_outro').value = registro.variedade_digitada || (!["Bro 68 syngenta", "TSV Master", "Jiraya", "Pharlap"].includes(registro.variedade) ? registro.variedade : '');
+
+            document.getElementById('aplicacao').value = registro.aplicacao;
+            document.getElementById('total_mudas').value = registro.total_mudas;
+            document.getElementById('total_canteiros').value = registro.total_canteiros;
+            document.getElementById('dosagem').value = registro.dosagem;
+            document.getElementById('unidade').value = registro.unidade;
+
+            handleOutrosTrigger();
+            updatePreview();
+            
+            showToast('Visualizando registro no painel lateral.', 'success');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // MODAL DE CONFIRMAÇÃO CUSTOMIZADO
+        function showCustomConfirm(message, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            const msgEl = document.getElementById('confirm-modal-message');
+            const btnConfirm = document.getElementById('confirm-modal-confirm');
+            const btnCancel = document.getElementById('confirm-modal-cancel');
+
+            msgEl.innerText = message;
+            modal.classList.remove('hidden');
+
+            // Configurar handlers
+            btnConfirm.onclick = function() {
+                onConfirm();
+                modal.classList.add('hidden');
+            };
+
+            btnCancel.onclick = function() {
+                modal.classList.add('hidden');
+            };
+        }
+
+        // EXCLUSÃO DE UM REGISTRO UNICO
+        function deleteRecord(id) {
+            showCustomConfirm('Deseja realmente excluir este registro de teste permanente do seu histórico?', () => {
+                historyData = historyData.filter(item => item.id !== id);
+                localStorage.setItem('fazenda_oasis_testes', JSON.stringify(historyData));
+                
+                // Se o registro excluído estava sendo editado, limpa o estado de edição
+                if (editingId === id) {
+                    cancelEditing();
+                }
+
+                renderHistoryTable();
+                showToast('Registro removido com sucesso.', 'info');
+            });
+        }
+
+        // LIMPAR HISTÓRICO COMPLETO
+        function clearHistory() {
+            if (historyData.length === 0) {
+                showToast('O histórico já está vazio.', 'info');
+                return;
+            }
+            showCustomConfirm('Deseja apagar TODO o histórico registrado localmente? Esta operação é permanente!', () => {
+                historyData = [];
+                localStorage.removeItem('fazenda_oasis_testes');
+                cancelEditing();
+                renderHistoryTable();
+                showToast('Histórico limpo com sucesso.', 'success');
+            });
+        }
+
+        // RENDERIZAR TABELA DO HISTÓRICO
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-rows');
+            const noHistoryState = document.getElementById('no-history-state');
+            
+            tbody.innerHTML = '';
+
+            if (historyData.length === 0) {
+                noHistoryState.classList.remove('hidden');
+                return;
+            }
+
+            noHistoryState.classList.add('hidden');
+
+            historyData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-stone-50/80 transition-colors";
+                
+                const displayBloco = item.bloco.length <= 2 ? `Bloco ${item.bloco}` : item.bloco;
+                const displayTeste = item.identificador_teste || 'Teste 1';
+                const displayCulturaVar = `${item.cultura} (${item.variedade})`;
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-medium text-stone-600">${item.data.split(' ')[0]} <span class="text-xs text-stone-400 block">${item.data.split(' ')[1] || ''}</span></td>
+                    <td class="py-3.5 px-4 font-bold text-stone-800">
+                        ${displayBloco} 
+                        <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded block w-max mt-0.5 border border-emerald-100">${displayTeste}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-stone-700 font-medium">${displayCulturaVar}</td>
+                    <td class="py-3.5 px-4 text-stone-600">${item.aplicacao}</td>
+                    <td class="py-3.5 px-4 text-stone-600">
+                        <span class="font-semibold text-stone-800">${item.total_mudas}</span> mudas / 
+                        <span class="font-semibold text-stone-800">${item.total_canteiros}</span> cant.
+                    </td>
+                    <td class="py-3.5 px-4 text-center font-extrabold text-emerald-800 bg-emerald-50/30">${item.dosagem} ${item.unidade}</td>
+                    <td class="py-3.5 px-4 text-right">
+                        <div class="inline-flex gap-1.5">
+                            <button onclick="loadRecordToPreview(${item.id})" title="Visualizar este registro" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded transition-colors">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="editRecord(${item.id})" title="Editar este registro" class="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteRecord(${item.id})" title="Excluir" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded transition-colors">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // EXPORTAÇÃO COMO IMAGEM (JPEG)
+        function exportAsJPEG() {
+            const captureArea = document.getElementById('capture-area');
+            
+            showToast('Preparando imagem para download...', 'info');
+
+            html2canvas(captureArea, {
+                backgroundColor: '#ffffff',
+                scale: 2, // Melhora a qualidade da imagem gerada
+                useCORS: true
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const link = document.createElement('a');
+                
+                // Formatar nome amigável para o arquivo
+                const bVal = document.getElementById('bloco').value;
+                const bOutro = document.getElementById('bloco_outro').value;
+                const blocoNome = (bVal === 'outros') ? bOutro : bVal;
+                const dataStr = new Date().toISOString().split('T')[0];
+                
+                link.download = `Registro_Teste_Fazenda_Oasis_${blocoNome || 'Geral'}_${dataStr}.jpg`;
+                link.href = imgData;
+                link.click();
+                
+                showToast('Imagem JPEG baixada com sucesso!', 'success');
+            }).catch(err => {
+                console.error('Erro na exportação JPEG:', err);
+                showToast('Erro ao exportar imagem.', 'error');
+            });
+        }
+
+        // EXPORTAÇÃO COMO PDF
+        function exportAsPDF() {
+            const captureArea = document.getElementById('capture-area');
+            
+            showToast('Gerando documento PDF...', 'info');
+
+            html2canvas(captureArea, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                useCORS: true
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                
+                // Dimensões do PDF (A4 é aproximadamente 210x297mm)
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const imgWidth = 190; // largura útil com margem de 10mm de cada lado
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                // Centralização vertical básica na página
+                const positionY = 25;
+
+                pdf.addImage(imgData, 'JPEG', 10, positionY, imgWidth, imgHeight);
+                
+                // Formatar nome do arquivo PDF
+                const bVal = document.getElementById('bloco').value;
+                const bOutro = document.getElementById('bloco_outro').value;
+                const blocoNome = (bVal === 'outros') ? bOutro : bVal;
+                const dataStr = new Date().toISOString().split('T')[0];
+                
+                pdf.save(`Registro_Teste_Fazenda_Oasis_${blocoNome || 'Geral'}_${dataStr}.pdf`);
+                
+                showToast('Documento PDF baixado com sucesso!', 'success');
+            }).catch(err => {
+                console.error('Erro na exportação PDF:', err);
+                showToast('Erro ao exportar PDF.', 'error');
+            });
+        }
+
+        // TOAST NOTIFICATIONS (Substituto seguro do alert())
+        function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             
-            const bgClass = type === 'success' ? 'bg-emerald-800 text-white' : 'bg-red-800 text-white';
-            const icon = type === 'success' ? 'check-circle' : 'alert-triangle';
+            // Estilos com base no tipo
+            let bgClass = 'bg-stone-800 text-white';
+            let iconClass = 'fa-info-circle text-blue-400';
+            
+            if (type === 'success') {
+                bgClass = 'bg-emerald-900 border-l-4 border-emerald-500 text-emerald-50';
+                iconClass = 'fa-circle-check text-emerald-400';
+            } else if (type === 'error') {
+                bgClass = 'bg-rose-900 border-l-4 border-rose-500 text-rose-50';
+                iconClass = 'fa-triangle-exclamation text-rose-400';
+            } else if (type === 'info') {
+                bgClass = 'bg-stone-900 border-l-4 border-amber-500 text-stone-100';
+                iconClass = 'fa-bolt text-amber-400';
+            }
 
-            toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border border-white/10 ${bgClass} transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+            toast.className = `${bgClass} p-4 rounded-xl shadow-lg flex items-center gap-3 text-sm font-medium transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto max-w-sm`;
             toast.innerHTML = `
-                <i data-lucide="${icon}" class="w-5 h-5 flex-shrink-0"></i>
-                <span class="text-xs font-semibold">${message}</span>
+                <i class="fa-solid ${iconClass} text-lg shrink-0"></i>
+                <div>${message}</div>
             `;
             
             container.appendChild(toast);
-            lucide.createIcons();
-
+            
+            // Animation trigger
             setTimeout(() => {
                 toast.classList.remove('translate-y-2', 'opacity-0');
             }, 10);
 
+            // Auto-destruction
             setTimeout(() => {
-                toast.classList.add('translate-y-2', 'opacity-0');
+                toast.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => {
                     toast.remove();
                 }, 300);
-            }, 3000);
-        }
-
-        // --- ENTRADA DE BLOCO OUTRO ---
-        function handleDropdownChange(selectId, customContainerId) {
-            const selectElement = document.getElementById(selectId);
-            const container = document.getElementById(customContainerId);
-            const customInput = container.querySelector('input');
-
-            if (selectElement.value === 'Outros') {
-                container.classList.remove('hidden');
-                customInput.setAttribute('required', 'required');
-                customInput.focus();
-            } else {
-                container.classList.add('hidden');
-                customInput.removeAttribute('required');
-                customInput.value = '';
-            }
-        }
-
-        // --- EXIBIÇÃO DE UNIDADE CUSTOMIZADA ---
-        function toggleCustomUnitInput(id, select) {
-            const container = document.getElementById(`custom-unit-container-${id}`);
-            const input = container.querySelector('input');
-            if (select.value === 'Outros') {
-                container.classList.remove('hidden');
-                input.setAttribute('required', 'required');
-                input.focus();
-            } else {
-                container.classList.add('hidden');
-                input.removeAttribute('required');
-                input.value = '';
-            }
-        }
-
-        // --- CÁLCULO DE SEMANAS ---
-        function getWeekNumber(dateStr) {
-            if (!dateStr) return '';
-            const d = new Date(dateStr);
-            d.setHours(0, 0, 0, 0);
-            const dayNum = d.getDay() || 7;
-            d.setDate(d.getDate() + 4 - dayNum);
-            const yearStart = new Date(d.getFullYear(), 0, 1);
-            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-        }
-
-        function updateWeekField(dateStr) {
-            const week = getWeekNumber(dateStr);
-            document.getElementById('reg-week').value = week ? `Semana ${week}` : '';
-        }
-
-        // --- GESTÃO DINÂMICA DE LINHAS DE TESTE COM MÚLTIPLAS FOTOS ---
-        function addTestRow() {
-            const container = document.getElementById('tests-container');
-            const id = ++testCounter;
-
-            const row = document.createElement('div');
-            row.id = `test-row-${id}`;
-            row.className = `bg-slate-50/70 p-4 rounded-xl border border-slate-100 space-y-3 relative transition-all hover:bg-slate-50`;
-            
-            row.innerHTML = `
-                <!-- Linha 1: Identificação, Mudas, Quantidade e Medida -->
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
-                    <div class="md:col-span-5">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Identificação do Teste</label>
-                        <input type="text" required placeholder="Ex: Fungicida X, Adubo Y" data-field="name"
-                               class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-oasis-600 focus:border-oasis-600 bg-white">
-                    </div>
-                    <div class="md:col-span-3">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mudas Aplicadas</label>
-                        <input type="number" min="0" required placeholder="Escrever manual..." data-field="mudas"
-                               class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-oasis-600 focus:border-oasis-600 bg-white text-center">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Qtd Aplicada</label>
-                        <input type="number" step="0.01" min="0.01" required placeholder="Ex: 5" data-field="qty"
-                               class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-oasis-600 focus:border-oasis-600 bg-white text-center">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Medida</label>
-                        <select required data-field="unit" onchange="toggleCustomUnitInput(${id}, this)"
-                                class="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-oasis-600 focus:border-oasis-600 bg-white">
-                            <option value="Litros">Litros (L)</option>
-                            <option value="ml">Mililitros (ml)</option>
-                            <option value="Gramas">Gramas (g)</option>
-                            <option value="KG">Quilogramas (kg)</option>
-                            <option value="Outros">Outros...</option>
-                        </select>
-                        <div id="custom-unit-container-${id}" class="hidden mt-1">
-                            <input type="text" placeholder="Qual?" data-field="custom-unit"
-                                   class="w-full rounded-lg border border-emerald-300 px-2 py-1 text-[10px] focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Linha 2: Observações / Resultados -->
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Efeitos e Observações</label>
-                    <textarea required rows="2" placeholder="Descreva os resultados observados neste teste específico..." data-field="result"
-                              class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-oasis-600 focus:border-oasis-600 bg-white"></textarea>
-                </div>
-
-                <!-- Linha 3: Foto e Miniatura com Alinhamento -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100 pt-3">
-                    <div class="flex items-center gap-3 flex-grow flex-wrap">
-                        <div class="relative overflow-hidden bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 cursor-pointer flex items-center gap-1.5 transition-all">
-                            <i data-lucide="camera" class="w-4 h-4 text-slate-400"></i>
-                            <span>Anexar Foto</span>
-                            <input type="file" accept="image/*" multiple onchange="previewImages(${id}, this)"
-                                   class="absolute inset-0 opacity-0 cursor-pointer">
-                        </div>
-                        
-                        <!-- Lista de fotos anexadas -->
-                        <div id="photos-container-${id}" class="flex flex-wrap gap-1.5 items-center"></div>
-                    </div>
-                    
-                    <!-- Remover Subteste -->
-                    <button type="button" onclick="removeTestRow(${id})" 
-                            class="text-xs text-slate-400 hover:text-red-500 font-semibold flex items-center gap-1 transition-all py-1 px-2 rounded hover:bg-red-50">
-                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Remover Teste
-                    </button>
-                </div>
-            `;
-
-            container.appendChild(row);
-            lucide.createIcons();
-        }
-
-        function removeTestRow(id) {
-            const container = document.getElementById('tests-container');
-            const rowCount = container.children.length;
-
-            if (rowCount <= 1) {
-                showToast("O monitoramento precisa de pelo menos um teste ativo.", "error");
-                return;
-            }
-
-            const row = document.getElementById(`test-row-${id}`);
-            if (row) {
-                row.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => { row.remove(); }, 150);
-            }
-        }
-
-        // --- SISTEMA DE PREVIEW E BASE64 PARA MÚLTIPLAS FOTOS ---
-        function previewImages(id, input) {
-            const files = input.files;
-            if (!files || files.length === 0) return;
-
-            const container = document.getElementById(`photos-container-${id}`);
-
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64Data = e.target.result;
-                    
-                    // Cria o container individual da miniatura
-                    const thumbDiv = document.createElement('div');
-                    thumbDiv.className = 'w-10 h-10 rounded-lg overflow-hidden border border-slate-200 relative group flex-shrink-0';
-                    thumbDiv.innerHTML = `
-                        <img src="${base64Data}" class="preview-thumb-img w-full h-full object-cover">
-                        <button type="button" onclick="this.parentElement.remove();" 
-                                class="absolute top-0 right-0 bg-red-600 hover:bg-red-700 text-white p-0.5 rounded-bl opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center">
-                            <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    `;
-                    container.appendChild(thumbDiv);
-                };
-                reader.readAsDataURL(file);
-            });
-            
-            showToast("Foto(s) adicionada(s) com sucesso!");
-            input.value = ''; // Reseta input para permitir carregar arquivos iguais novamente
-        }
-
-        // --- ATUALIZAÇÃO DOS ESTATÍSTICOS ---
-        function updateStats() {
-            let totalLiters = 0;
-            let totalKg = 0;
-            let activeBlocks = new Set();
-            let totalTests = 0;
-
-            testRecords.forEach(rec => {
-                activeBlocks.add(rec.block);
-                rec.tests.forEach(t => {
-                    totalTests++;
-                    const qty = parseFloat(t.qty) || 0;
-                    if (t.unit === 'Litros' || t.unit === 'ml') {
-                        // Converte ml para litros na métrica geral se for ml
-                        totalLiters += (t.unit === 'ml' ? qty / 1000 : qty);
-                    } else if (t.unit === 'KG' || t.unit === 'Gramas') {
-                        totalKg += (t.unit === 'Gramas' ? qty / 1000 : qty);
-                    }
-                });
-            });
-
-            document.getElementById('stat-blocks').innerText = activeBlocks.size;
-            document.getElementById('stat-tests').innerText = totalTests;
-            document.getElementById('stat-liters').innerText = `${totalLiters.toFixed(2)} L`;
-            document.getElementById('stat-weight').innerText = `${totalKg.toFixed(2)} kg`;
-        }
-
-        // --- LIMPEZA ---
-        function clearForm() {
-            document.getElementById('reg-block').value = '';
-            document.getElementById('reg-block-custom-container').classList.add('hidden');
-            document.getElementById('reg-block-custom').value = '';
-            document.getElementById('reg-block-custom').removeAttribute('required');
-
-            // Limpar todos os subtestes e adicionar apenas um novo em branco
-            const container = document.getElementById('tests-container');
-            container.innerHTML = '';
-            addTestRow();
-
-            showToast("Formulário de monitoramento redefinido!");
-        }
-
-        // --- SALVAR REGISTRO ---
-        async function saveRecord(event) {
-            event.preventDefault();
-
-            const date = document.getElementById('reg-date').value;
-            const week = document.getElementById('reg-week').value;
-
-            const blockSelect = document.getElementById('reg-block').value;
-            const block = blockSelect === 'Outros'
-                ? document.getElementById('reg-block-custom').value.trim()
-                : "Bloco " + blockSelect;
-
-            if (!block) {
-                showToast("Por favor, selecione ou digite o Bloco correspondente.", "error");
-                return;
-            }
-
-            // Coletar dados de todos os testes dinâmicos
-            const testRows = document.querySelectorAll('#tests-container > div');
-            const tests = [];
-            let validationPassed = true;
-
-            testRows.forEach(row => {
-                const name = row.querySelector('[data-field="name"]').value.trim();
-                const mudas = parseInt(row.querySelector('[data-field="mudas"]').value) || 0;
-                const qty = parseFloat(row.querySelector('[data-field="qty"]').value) || 0;
-                
-                const unitSelect = row.querySelector('[data-field="unit"]').value;
-                const unit = unitSelect === 'Outros'
-                    ? row.querySelector('[data-field="custom-unit"]').value.trim()
-                    : unitSelect;
-
-                const result = row.querySelector('[data-field="result"]').value.trim();
-                
-                // Coleta todas as fotos anexadas (como base64) para esta linha de teste
-                const photos = Array.from(row.querySelectorAll('.preview-thumb-img')).map(img => img.src);
-
-                if (!name || qty <= 0 || !result || (unitSelect === 'Outros' && !unit)) {
-                    validationPassed = false;
-                    return;
-                }
-
-                tests.push({
-                    name,
-                    mudas,
-                    qty,
-                    unit,
-                    result,
-                    photos
-                });
-            });
-
-            if (!validationPassed) {
-                showToast("Por favor, preencha todos os campos obrigatórios dos testes.", "error");
-                return;
-            }
-
-            const record = {
-                id: Date.now().toString(),
-                date,
-                week,
-                block,
-                tests
-            };
-
-            testRecords.unshift(record);
-            renderRecords();
-            updateStats();
-
-            if (googleSheetsWebhookUrl && googleSheetsWebhookUrl !== 'SUA_URL_DO_APPS_SCRIPT_AQUI') {
-                await sendToGoogleSheets(record);
-            } else {
-                showToast("Monitoramento salvo localmente! Envie-me a URL do seu script para ativar o envio automático.", "success");
-            }
-
-            clearForm();
-        }
-
-        // --- ENVIO GOOGLE PLANILHAS (Desmembramento Automático) ---
-        async function sendToGoogleSheets(record) {
-            const syncStatusDiv = document.getElementById('sync-status');
-            syncStatusDiv.classList.remove('hidden');
-
-            const formatDateBr = (dateStr) => {
-                const [year, month, day] = dateStr.split('-');
-                return `${day}/${month}/${year}`;
-            };
-
-            // Criar uma linha separada para cada subteste para o Sheets
-            const payload = record.tests.map(t => ({
-                Data: formatDateBr(record.date),
-                Semana: record.week,
-                Bloco: record.block,
-                Teste: t.name,
-                Quantidade: t.qty,
-                Unidade: t.unit,
-                Mudas: t.mudas,
-                Resultado: t.result,
-                Foto: t.photos && t.photos.length > 0 ? `[${t.photos.length} Fotos Anexas]` : "[Sem Foto]"
-            }));
-
-            try {
-                const response = await fetch(googleSheetsWebhookUrl, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    showToast("Sincronizado! Dados incluídos com sucesso na planilha.");
-                } else {
-                    throw new Error("Erro de resposta HTTP");
-                }
-            } catch (err) {
-                console.warn("Bloqueio de CORS detectado. Tentando via no-cors...", err);
-                try {
-                    await fetch(googleSheetsWebhookUrl, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify(payload)
-                    });
-                    showToast("Dados salvos e sincronizados com a planilha!", "success");
-                } catch (fallbackError) {
-                    showToast("Erro na sincronização automática. Verifique seu Web App.", "error");
-                }
-            } finally {
-                syncStatusDiv.classList.add('hidden');
-            }
-        }
-
-        // --- EXCLUSÃO ---
-        function deleteRecord(id) {
-            testRecords = testRecords.filter(r => r.id !== id);
-            renderRecords();
-            updateStats();
-            showToast("Registro removido.", "success");
-        }
-
-        // --- RENDERIZAR LISTA NO HISTÓRICO ---
-        function renderRecords() {
-            const emptyState = document.getElementById('empty-state');
-            const listContainer = document.getElementById('records-list');
-
-            if (testRecords.length === 0) {
-                emptyState.classList.remove('hidden');
-                listContainer.classList.add('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            listContainer.classList.remove('hidden');
-            listContainer.innerHTML = '';
-
-            testRecords.forEach(rec => {
-                const formatDate = (dateStr) => {
-                    const [year, month, day] = dateStr.split('-');
-                    return `${day}/${month}/${year}`;
-                };
-
-                let testsHTML = '';
-                rec.tests.forEach(t => {
-                    // Renderiza múltiplas miniaturas de fotos anexadas se existirem
-                    let listPhotosHTML = '';
-                    if (t.photos && t.photos.length > 0) {
-                        listPhotosHTML = `<div class="flex flex-wrap gap-2 mt-2">`;
-                        t.photos.forEach(photo => {
-                            listPhotosHTML += `
-                                <div class="w-12 h-12 rounded-lg overflow-hidden border border-slate-200 relative group flex-shrink-0 shadow-sm">
-                                    <img src="${photo}" class="w-full h-full object-cover hover:scale-105 transition-all cursor-pointer" onclick="viewPhotoModal('${photo}')">
-                                </div>
-                            `;
-                        });
-                        listPhotosHTML += `</div>`;
-                    }
-
-                    testsHTML += `
-                        <div class="py-4 border-b border-slate-100 last:border-0 space-y-2">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="font-bold text-slate-800 text-sm">${t.name}</span>
-                                <div class="flex gap-2">
-                                    <span class="text-xs bg-indigo-50 text-indigo-800 font-bold px-2 py-1 rounded">Mudas: ${t.mudas.toLocaleString('pt-PT')}</span>
-                                    <span class="text-xs bg-emerald-50 text-emerald-800 font-bold px-2 py-1 rounded">Dosagem: ${t.qty} ${t.unit}</span>
-                                </div>
-                            </div>
-                            <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-line">${t.result}</p>
-                            ${listPhotosHTML}
-                        </div>
-                    `;
-                });
-
-                const card = document.createElement('div');
-                card.className = "bg-slate-50 rounded-2xl border border-slate-150 p-5 space-y-4 hover:border-slate-200 transition-all shadow-sm relative";
-                card.innerHTML = `
-                    <div class="flex flex-wrap justify-between items-start gap-3 border-b border-slate-200/50 pb-3">
-                        <div>
-                            <span class="text-[10px] bg-slate-200 text-slate-600 font-bold tracking-wider px-2 py-0.5 rounded-full uppercase mb-1 inline-block">
-                                ${rec.week}
-                            </span>
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-base font-bold text-slate-800">${rec.block}</h3>
-                                <span class="text-slate-300">|</span>
-                                <p class="text-xs text-slate-500 font-medium">Data: <strong class="text-slate-700">${formatDate(rec.date)}</strong></p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <button onclick="downloadSinglePDF('${rec.id}')" title="Baixar PDF" 
-                                    class="text-slate-500 hover:text-red-600 hover:bg-white p-2 rounded-lg border border-transparent hover:border-slate-200 transition-all shadow-none hover:shadow-sm">
-                                <i data-lucide="file-text" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="downloadSingleJPEG('${rec.id}')" title="Baixar JPEG" 
-                                    class="text-slate-500 hover:text-blue-600 hover:bg-white p-2 rounded-lg border border-transparent hover:border-slate-200 transition-all shadow-none hover:shadow-sm">
-                                <i data-lucide="image" class="w-4 h-4"></i>
-                            </button>
-                            <span class="text-slate-200 px-1">|</span>
-                            <button onclick="deleteRecord('${rec.id}')" title="Excluir" 
-                                    class="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-all">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Resumo dos Testes Aplicados</p>
-                        <div class="divide-y divide-slate-100">
-                            ${testsHTML}
-                        </div>
-                    </div>
-                `;
-
-                listContainer.appendChild(card);
-            });
-
-            lucide.createIcons();
-        }
-
-        // --- VISUALIZAR FOTO AMPLIADA (MODAL SIMPLES) ---
-        function viewPhotoModal(base64) {
-            let modal = document.getElementById('photo-view-modal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'photo-view-modal';
-                modal.className = 'fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 cursor-pointer';
-                modal.onclick = function() { modal.classList.add('hidden'); };
-                modal.innerHTML = `
-                    <div class="max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-white p-1 relative shadow-2xl">
-                        <img id="photo-view-img" src="" class="max-w-full max-h-[85vh] object-contain rounded-xl">
-                    </div>
-                `;
-                document.body.appendChild(modal);
-            }
-            document.getElementById('photo-view-img').src = base64;
-            modal.classList.remove('hidden');
-        }
-
-        // --- MONTAGEM DE EXPORTAÇÃO INDIVIDUAL COM MÚLTIPLAS FOTOS ---
-        function buildSingleReportContent(record) {
-            const formatDate = (dateStr) => {
-                const [year, month, day] = dateStr.split('-');
-                return `${day}/${month}/${year}`;
-            };
-
-            let testsRowsHTML = record.tests.map(t => {
-                let imagesHTML = '';
-                if (t.photos && t.photos.length > 0) {
-                    imagesHTML = `<div class="flex flex-wrap gap-2 mt-3">`;
-                    t.photos.forEach(photo => {
-                        imagesHTML += `<img src="${photo}" class="rounded-xl border border-slate-200 max-h-[140px] w-auto">`;
-                    });
-                    imagesHTML += `</div>`;
-                }
-
-                return `
-                    <div class="bg-white p-5 rounded-xl border border-slate-150 shadow-sm space-y-2">
-                        <div class="flex justify-between items-center text-xs border-b border-slate-100 pb-2">
-                            <span class="font-bold text-slate-900 text-sm">${t.name}</span>
-                            <div class="flex gap-2">
-                                <span class="font-bold text-indigo-900 bg-indigo-50 px-2.5 py-1 rounded">Mudas Aplicadas: ${t.mudas}</span>
-                                <span class="font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded">Quantidade: ${t.qty} ${t.unit}</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-600 whitespace-pre-line leading-relaxed">${t.result}</p>
-                        ${imagesHTML}
-                    </div>
-                `;
-            }).join('');
-
-            return `
-                <div class="bg-gradient-to-r from-emerald-50 to-teal-50/30 rounded-2xl p-6 border border-emerald-100 flex flex-wrap gap-6 justify-between items-center mb-6">
-                    <div>
-                        <p class="text-xs font-bold text-emerald-700 tracking-wider uppercase mb-1">${record.week}</p>
-                        <h2 class="text-2xl font-bold text-slate-850 tracking-tight">${record.block}</h2>
-                        <p class="text-xs text-slate-500 mt-1">Aplicações registradas para análise de resultados.</p>
-                    </div>
-                    <div class="bg-white px-4 py-2.5 rounded-xl border border-slate-150 text-right">
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Data do Monitoramento</p>
-                        <p class="text-sm font-bold text-slate-800">${formatDate(record.date)}</p>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Testes Aplicados & Resultados</h3>
-                    ${testsRowsHTML}
-                </div>
-            `;
-        }
-
-        // --- MONTAGEM DE EXPORTAÇÃO GERAL CONSOLIDADA ---
-        function buildGeneralReportContent() {
-            const formatDate = (dateStr) => {
-                const [year, month, day] = dateStr.split('-');
-                return `${day}/${month}/${year}`;
-            };
-
-            let blockSummaries = testRecords.map(rec => {
-                let testsSubRows = rec.tests.map(t => {
-                    const imgIndicator = t.photos && t.photos.length > 0 
-                        ? `<span class="inline-block text-[10px] text-emerald-700 bg-emerald-50 font-bold rounded px-1.5 py-0.5 ml-2">[${t.photos.length} Fotos]</span>`
-                        : '';
-
-                    return `
-                        <div class="py-3 border-b border-slate-100 last:border-0">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold text-slate-800 text-xs">${t.name} ${imgIndicator}</span>
-                                <div class="flex gap-3 text-xs">
-                                    <span class="text-slate-500">Mudas: <strong class="text-slate-800">${t.mudas}</strong></span>
-                                    <span class="text-slate-500">Dosagem: <strong class="text-slate-800">${t.qty} ${t.unit}</strong></span>
-                                </div>
-                            </div>
-                            <p class="text-xs text-slate-500 line-clamp-2">${t.result}</p>
-                        </div>
-                    `;
-                }).join('');
-
-                return `
-                    <div class="border border-slate-150 rounded-2xl p-5 bg-white shadow-sm space-y-3">
-                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                            <div>
-                                <span class="text-[9px] bg-slate-200 text-slate-600 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">${rec.week}</span>
-                                <h4 class="text-base font-bold text-slate-850 mt-1">${rec.block}</h4>
-                            </div>
-                            <span class="text-xs text-slate-500 font-semibold bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">Monitoração: ${formatDate(rec.date)}</span>
-                        </div>
-                        <div class="space-y-1">
-                            ${testsSubRows}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            return `
-                <div class="bg-emerald-950 text-white p-5 rounded-2xl shadow-md mb-6 flex justify-between items-center text-center">
-                    <div class="w-1/2 border-r border-white/10">
-                        <span class="text-[10px] text-emerald-200 font-bold uppercase tracking-wider">Blocos Monitorados</span>
-                        <p class="text-2xl font-bold mt-1">${testRecords.length}</p>
-                    </div>
-                    <div class="w-1/2">
-                        <span class="text-[10px] text-emerald-200 font-bold uppercase tracking-wider">Período de Análise</span>
-                        <p class="text-sm font-semibold mt-1.5 uppercase">Atualizado Hoje</p>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Histórico Consolidado por Bloco</h3>
-                    ${blockSummaries}
-                </div>
-            `;
-        }
-
-        // --- EXPORTAR INDIVIDUAL EM PDF ---
-        function downloadSinglePDF(id) {
-            const record = testRecords.find(r => r.id === id);
-            if (!record) return;
-
-            const printArea = document.getElementById('print-area');
-            const printContent = document.getElementById('print-content');
-            document.getElementById('print-gen-date').innerText = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
-            printContent.innerHTML = buildSingleReportContent(record);
-
-            const exportTemplate = document.getElementById('export-template');
-            exportTemplate.classList.remove('hidden');
-
-            const opt = {
-                margin:       10,
-                filename:     `FazendaOasis_Teste_${record.block.replace(/\s+/g, '_')}_${record.id}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2.5, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().from(printArea).set(opt).save().then(() => {
-                exportTemplate.classList.add('hidden');
-                showToast("PDF de monitoramento gerado!");
-            });
-        }
-
-        // --- EXPORTAR INDIVIDUAL EM JPEG ---
-        function downloadSingleJPEG(id) {
-            const record = testRecords.find(r => r.id === id);
-            if (!record) return;
-
-            const printArea = document.getElementById('print-area');
-            const printContent = document.getElementById('print-content');
-            document.getElementById('print-gen-date').innerText = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
-            printContent.innerHTML = buildSingleReportContent(record);
-
-            const exportTemplate = document.getElementById('export-template');
-            exportTemplate.classList.remove('hidden');
-
-            html2canvas(printArea, { scale: 3, useCORS: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `FazendaOasis_Teste_${record.block.replace(/\s+/g, '_')}_${record.id}.jpg`;
-                link.href = canvas.toDataURL('image/jpeg', 0.95);
-                link.click();
-                
-                exportTemplate.classList.add('hidden');
-                showToast("JPEG de monitoramento salvo!");
-            });
-        }
-
-        // --- EXPORTAR GERAL EM PDF ---
-        function exportAllToPDF() {
-            if (testRecords.length === 0) {
-                showToast("Não há testes registrados para exportar.", "error");
-                return;
-            }
-
-            const printArea = document.getElementById('print-area');
-            const printContent = document.getElementById('print-content');
-            document.getElementById('print-gen-date').innerText = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
-            printContent.innerHTML = buildGeneralReportContent();
-
-            const exportTemplate = document.getElementById('export-template');
-            exportTemplate.classList.remove('hidden');
-
-            const opt = {
-                margin:       10,
-                filename:     `FazendaOasis_Relatorio_Geral_Testes_${Date.now()}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2.5, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().from(printArea).set(opt).save().then(() => {
-                exportTemplate.classList.add('hidden');
-                showToast("Relatório Geral em PDF exportado!");
-            });
-        }
-
-        // --- EXPORTAR GERAL EM JPEG ---
-        function exportAllToJPEG() {
-            if (testRecords.length === 0) {
-                showToast("Não há testes registrados para exportar.", "error");
-                return;
-            }
-
-            const printArea = document.getElementById('print-area');
-            const printContent = document.getElementById('print-content');
-            document.getElementById('print-gen-date').innerText = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
-            printContent.innerHTML = buildGeneralReportContent();
-
-            const exportTemplate = document.getElementById('export-template');
-            exportTemplate.classList.remove('hidden');
-
-            html2canvas(printArea, { scale: 3, useCORS: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `FazendaOasis_Relatorio_Geral_Testes_${Date.now()}.jpg`;
-                link.href = canvas.toDataURL('image/jpeg', 0.95);
-                link.click();
-                
-                exportTemplate.classList.add('hidden');
-                showToast("Relatório Geral em JPEG salvo!");
-            });
+            }, 4000);
         }
     </script>
 </body>
