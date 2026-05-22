@@ -147,12 +147,24 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Identificação / Nº do Teste *</label>
-              <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                  <i class="fa-solid fa-hashtag text-xs"></i>
-                </span>
-                <input type="text" id="identificacao_teste" required placeholder="Ex: Teste 01, Teste 02" 
-                  class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium">
+              <div class="grid grid-cols-1 gap-2">
+                <select id="identificacao_teste" required onchange="checarOutroCampo('identificacao_teste')"
+                  class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium bg-white">
+                  <option value="">Selecione o Teste...</option>
+                  <option value="Teste 01">Teste 01</option>
+                  <option value="Teste 02">Teste 02</option>
+                  <option value="Teste 03">Teste 03</option>
+                  <option value="Teste 04">Teste 04</option>
+                  <option value="Teste 05">Teste 05</option>
+                  <option value="Teste 06">Teste 06</option>
+                  <option value="Teste 07">Teste 07</option>
+                  <option value="Teste 08">Teste 08</option>
+                  <option value="Teste 09">Teste 09</option>
+                  <option value="Teste 10">Teste 10</option>
+                  <option value="outro">Outro (digitar)...</option>
+                </select>
+                <input type="text" id="identificacao_teste_outro" placeholder="Especifique o Teste" 
+                  class="hidden w-full px-3.5 py-2.5 border border-amber-300 rounded-xl bg-amber-50/30 focus:ring-2 focus:ring-amber-500 text-sm font-medium transition-all">
               </div>
             </div>
 
@@ -237,7 +249,6 @@
             </div>
           </div>
 
-          <!-- Modificado para ocupar apenas duas colunas na largura -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Total Canteiros *</label>
@@ -536,7 +547,7 @@
       limparFormulario();
 
       const inputs = [
-        'identificacao_teste', 'bloco', 'bloco_outro', 'cultura', 'cultura_outro', 
+        'identificacao_teste', 'identificacao_teste_outro', 'bloco', 'bloco_outro', 'cultura', 'cultura_outro', 
         'variedade', 'variedade_outro', 'aplicacao', 'dosagem', 'unidade', 
         'unidade_outro', 'total_canteiros', 'mudas'
       ];
@@ -677,7 +688,9 @@
       event.preventDefault();
 
       const editId = document.getElementById('edit-id').value;
-      const identificacao = document.getElementById('identificacao_teste').value.trim();
+      
+      const testeSelect = document.getElementById('identificacao_teste').value;
+      const identificacao = testeSelect === 'outro' ? document.getElementById('identificacao_teste_outro').value.trim() : testeSelect;
       
       const blocoSelect = document.getElementById('bloco').value;
       const bloco = blocoSelect === 'outro' ? document.getElementById('bloco_outro').value.trim() : blocoSelect;
@@ -697,7 +710,7 @@
       const total_canteiros = parseInt(document.getElementById('total_canteiros').value);
       const mudas = parseInt(document.getElementById('mudas').value);
 
-      if(!bloco || !cultura || !variedade || !unidade) {
+      if(!identificacao || !bloco || !cultura || !variedade || !unidade) {
         showToast("Preencha todos os campos obrigatórios.", true);
         return;
       }
@@ -734,7 +747,12 @@
 
     function prepararProximoTesteMesmoBloco(bloco, cultura, variedade, total_canteiros) {
       document.getElementById('edit-id').value = '';
+      
+      // Reseta a lista de identificação
       document.getElementById('identificacao_teste').value = '';
+      document.getElementById('identificacao_teste_outro').value = '';
+      document.getElementById('identificacao_teste_outro').classList.add('hidden');
+      
       document.getElementById('aplicacao').value = '';
       document.getElementById('dosagem').value = '';
       document.getElementById('mudas').value = '';
@@ -756,8 +774,19 @@
       if(!r) return;
 
       document.getElementById('edit-id').value = r.id;
-      document.getElementById('identificacao_teste').value = r.identificacao_teste;
 
+      // Identificação Teste
+      const testeSelect = document.getElementById('identificacao_teste');
+      if (Array.from(testeSelect.options).some(opt => opt.value === r.identificacao_teste)) {
+        testeSelect.value = r.identificacao_teste;
+        document.getElementById('identificacao_teste_outro').classList.add('hidden');
+      } else {
+        testeSelect.value = 'outro';
+        document.getElementById('identificacao_teste_outro').classList.remove('hidden');
+        document.getElementById('identificacao_teste_outro').value = r.identificacao_teste;
+      }
+
+      // Bloco
       const blocoSelect = document.getElementById('bloco');
       if (Array.from(blocoSelect.options).some(opt => opt.value === r.bloco)) {
         blocoSelect.value = r.bloco;
@@ -768,6 +797,7 @@
         document.getElementById('bloco_outro').value = r.bloco;
       }
 
+      // Cultura
       const culturaSelect = document.getElementById('cultura');
       if (Array.from(culturaSelect.options).some(opt => opt.value === r.cultura)) {
         culturaSelect.value = r.cultura;
@@ -778,6 +808,7 @@
         document.getElementById('cultura_outro').value = r.cultura;
       }
 
+      // Variedade
       const variedadeSelect = document.getElementById('variedade');
       if (Array.from(variedadeSelect.options).some(opt => opt.value === r.variedade)) {
         variedadeSelect.value = r.variedade;
@@ -788,6 +819,7 @@
         document.getElementById('variedade_outro').value = r.variedade;
       }
 
+      // Unidade
       const unidadeSelect = document.getElementById('unidade');
       if (Array.from(unidadeSelect.options).some(opt => opt.value === r.unidade)) {
         unidadeSelect.value = r.unidade;
@@ -851,6 +883,7 @@
       document.getElementById('testeForm').reset();
       document.getElementById('edit-id').value = '';
       
+      document.getElementById('identificacao_teste_outro').classList.add('hidden');
       document.getElementById('bloco_outro').classList.add('hidden');
       document.getElementById('cultura_outro').classList.add('hidden');
       document.getElementById('variedade_outro').classList.add('hidden');
@@ -871,7 +904,8 @@
         return;
       }
 
-      const identificador = document.getElementById('identificacao_teste').value.trim() || 'NOVO TESTE';
+      const testeSelect = document.getElementById('identificacao_teste').value;
+      const identificador = (testeSelect === 'outro' ? document.getElementById('identificacao_teste_outro').value.trim() : testeSelect) || 'NOVO TESTE';
       
       const blocoSelect = document.getElementById('bloco').value;
       const bloco = (blocoSelect === 'outro' ? document.getElementById('bloco_outro').value.trim() : blocoSelect) || '--';
@@ -914,7 +948,7 @@
       document.getElementById('print-indiv-identificador').textContent = identificador;
       document.getElementById('print-indiv-bloco').textContent = bloco;
       document.getElementById('print-indiv-cultura').textContent = cultura;
-      document.getElementById('print-indiv-variedade').textContent = variedade;
+      document.getElementById('print-indiv-variedade').textContent = variedad;
       document.getElementById('print-indiv-aplicacao').textContent = aplicacao;
       document.getElementById('print-indiv-dosagem').textContent = dosagem;
       document.getElementById('print-indiv-canteiros').textContent = canteiros;
