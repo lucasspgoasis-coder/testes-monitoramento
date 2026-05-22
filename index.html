@@ -66,10 +66,6 @@
                 </div>
             </div>
             <div class="flex items-center gap-4">
-                <button onclick="toggleSetupModal()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg border border-emerald-500 text-xs font-semibold shadow-sm transition-all">
-                    <i data-lucide="database" class="w-4 h-4"></i>
-                    Conectar Planilha Google
-                </button>
                 <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg border border-white/10 text-xs text-oasis-100">
                     <i data-lucide="calendar-days" class="w-4 h-4"></i>
                     <span id="header-date">A carregar data...</span>
@@ -102,7 +98,7 @@
             </div>
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
                 <div>
-                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Total em Litros</span>
+                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Total em Líquidos</span>
                     <h3 id="stat-liters" class="text-2xl font-bold text-slate-800 mt-1 font-mono">0 L</h3>
                 </div>
                 <div class="p-3 bg-blue-50 rounded-xl text-blue-600">
@@ -254,120 +250,6 @@
         </div>
     </main>
 
-    <!-- Modal Configuração Planilha -->
-    <div id="setup-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 mx-4 max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
-                <div class="flex items-center gap-2">
-                    <div class="p-2 bg-emerald-50 rounded-xl text-emerald-700">
-                        <i data-lucide="database" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-base">Conexão com Google Planilhas</h3>
-                        <p class="text-slate-400 text-xs">Sincronização imediata de múltiplos testes com fotos indicadas</p>
-                    </div>
-                </div>
-                <button onclick="toggleSetupModal()" class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 p-1.5 rounded-full transition-all">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-            </div>
-
-            <div class="space-y-6 text-sm text-slate-600">
-                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 space-y-2">
-                    <div class="flex items-center gap-1.5 font-bold">
-                        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
-                        <span>Para que funcione perfeitamente, configure a primeira linha (A1 a H1) com estes nomes:</span>
-                    </div>
-                    <span class="font-mono bg-amber-100/60 text-amber-900 font-semibold px-2 py-1 rounded block text-center text-[10px] overflow-x-auto whitespace-nowrap">
-                        Data | Semana | Bloco | Teste | Quantidade | Unidade | Mudas | Resultado | Foto
-                    </span>
-                    <p class="text-[11px] text-amber-800">Se o bloco tiver mais de um teste associado, o sistema gravará automaticamente <strong>uma linha correspondente para cada teste</strong> na sua planilha.</p>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">URL do Web App do Apps Script</label>
-                    <input type="text" id="sheet-webhook-url" placeholder="https://script.google.com/macros/s/.../exec"
-                           class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-emerald-600">
-                </div>
-
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="font-semibold text-slate-700">Código atualizado para o Google Apps Script</span>
-                        <button onclick="copyAppsScriptCode()" class="text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-md font-bold flex items-center gap-1 transition-all">
-                            <i data-lucide="copy" class="w-3 h-3"></i> Copiar Script
-                        </button>
-                    </div>
-                    <pre id="apps-script-code" class="bg-slate-900 text-emerald-400 font-mono text-[10px] p-4 rounded-xl overflow-x-auto max-h-[160px]">
-function doPost(e) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    if (!ss) {
-      return ContentService.createTextOutput(JSON.stringify({status: "error", message: "Abra o script diretamente pela planilha."}))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeader("Access-Control-Allow-Origin", "*");
-    }
-    
-    var sheet = ss.getActiveSheet();
-    var data = JSON.parse(e.postData.contents);
-    
-    if (Array.isArray(data)) {
-      data.forEach(function(row) {
-        sheet.appendRow([
-          row.Data,
-          row.Semana,
-          row.Bloco,
-          row.Teste,
-          row.Quantidade,
-          row.Unidade,
-          row.Mudas,
-          row.Resultado,
-          row.Foto
-        ]);
-      });
-    } else {
-      sheet.appendRow([
-        data.Data,
-        data.Semana,
-        data.Bloco,
-        data.Teste,
-        data.Quantidade,
-        data.Unidade,
-        data.Mudas,
-        data.Resultado,
-        data.Foto
-      ]);
-    }
-    
-    return ContentService.createTextOutput(JSON.stringify({status: "success"}))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader("Access-Control-Allow-Origin", "*");
-  } catch(error) {
-    return ContentService.createTextOutput(JSON.stringify({status: "error", message: error.toString()}))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader("Access-Control-Allow-Origin", "*");
-  }
-}
-
-function doOptions(e) {
-  return ContentService.createTextOutput("")
-    .setHeader("Access-Control-Allow-Origin", "*")
-    .setHeader("Access-Control-Allow-Methods", "POST, OPTIONS")
-    .setHeader("Access-Control-Allow-Headers", "Content-Type");
-}</pre>
-                </div>
-            </div>
-
-            <div class="mt-6 pt-4 border-t border-slate-100 flex justify-end gap-2">
-                <button onclick="toggleSetupModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition-all">
-                    Fechar
-                </button>
-                <button onclick="saveIntegrationSettings()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
-                    <i data-lucide="check" class="w-4 h-4"></i> Salvar URL
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Container do Toast -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
@@ -411,7 +293,9 @@ function doOptions(e) {
         // --- ESTADO GLOBAL ---
         let testRecords = [];
         let testCounter = 0;
-        let googleSheetsWebhookUrl = '';
+        
+        // Lucas, quando você me enviar a URL do Apps Script, colocaremos ela diretamente aqui:
+        let googleSheetsWebhookUrl = 'SUA_URL_DO_APPS_SCRIPT_AQUI';
 
         window.onload = function() {
             lucide.createIcons();
@@ -421,11 +305,10 @@ function doOptions(e) {
             document.getElementById('reg-date').value = today;
             updateWeekField(today);
 
-            // Carregar URL salva da Planilha
+            // Carrega se você já salvou alguma vez no localStorage
             const savedUrl = localStorage.getItem('oasis_test_webhook_url');
-            if (savedUrl) {
+            if (savedUrl && googleSheetsWebhookUrl === 'SUA_URL_DO_APPS_SCRIPT_AQUI') {
                 googleSheetsWebhookUrl = savedUrl;
-                document.getElementById('sheet-webhook-url').value = savedUrl;
             }
 
             // Data de exibição no Cabeçalho
@@ -467,41 +350,6 @@ function doOptions(e) {
             }, 3000);
         }
 
-        // --- CÓDIGO DA INTEGRAÇÃO ---
-        function copyAppsScriptCode() {
-            const codeText = document.getElementById('apps-script-code').innerText;
-            const textarea = document.createElement('textarea');
-            textarea.value = codeText;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            showToast("Código copiado! Cole na ferramenta Apps Script da Planilha.");
-        }
-
-        function toggleSetupModal() {
-            const modal = document.getElementById('setup-modal');
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
-            } else {
-                modal.classList.add('opacity-0');
-                setTimeout(() => { modal.classList.add('hidden'); }, 300);
-            }
-        }
-
-        function saveIntegrationSettings() {
-            let url = document.getElementById('sheet-webhook-url').value.trim();
-            if (url && !url.includes('/exec')) {
-                showToast("Erro: A URL de integração Google precisa terminar com /exec", "error");
-                return;
-            }
-            googleSheetsWebhookUrl = url;
-            localStorage.setItem('oasis_test_webhook_url', url);
-            showToast("Configuração salva com sucesso!");
-            toggleSetupModal();
-        }
-
         // --- ENTRADA DE BLOCO OUTRO ---
         function handleDropdownChange(selectId, customContainerId) {
             const selectElement = document.getElementById(selectId);
@@ -516,6 +364,21 @@ function doOptions(e) {
                 container.classList.add('hidden');
                 customInput.removeAttribute('required');
                 customInput.value = '';
+            }
+        }
+
+        // --- EXIBIÇÃO DE UNIDADE CUSTOMIZADA ---
+        function toggleCustomUnitInput(id, select) {
+            const container = document.getElementById(`custom-unit-container-${id}`);
+            const input = container.querySelector('input');
+            if (select.value === 'Outros') {
+                container.classList.remove('hidden');
+                input.setAttribute('required', 'required');
+                input.focus();
+            } else {
+                container.classList.add('hidden');
+                input.removeAttribute('required');
+                input.value = '';
             }
         }
 
@@ -535,7 +398,7 @@ function doOptions(e) {
             document.getElementById('reg-week').value = week ? `Semana ${week}` : '';
         }
 
-        // --- GESTÃO DINÂMICA DE LINHAS DE TESTE COM FOTO INDIVIDUAL ---
+        // --- GESTÃO DINÂMICA DE LINHAS DE TESTE COM MÚLTIPLAS FOTOS ---
         function addTestRow() {
             const container = document.getElementById('tests-container');
             const id = ++testCounter;
@@ -545,7 +408,7 @@ function doOptions(e) {
             row.className = `bg-slate-50/70 p-4 rounded-xl border border-slate-100 space-y-3 relative transition-all hover:bg-slate-50`;
             
             row.innerHTML = `
-                <!-- Linha 1: Identificação, Mudas, Quantidade e Unidade -->
+                <!-- Linha 1: Identificação, Mudas, Quantidade e Medida -->
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
                     <div class="md:col-span-5">
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Identificação do Teste</label>
@@ -564,12 +427,18 @@ function doOptions(e) {
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Medida</label>
-                        <select required data-field="unit"
+                        <select required data-field="unit" onchange="toggleCustomUnitInput(${id}, this)"
                                 class="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-oasis-600 focus:border-oasis-600 bg-white">
                             <option value="Litros">Litros (L)</option>
+                            <option value="ml">Mililitros (ml)</option>
                             <option value="Gramas">Gramas (g)</option>
                             <option value="KG">Quilogramas (kg)</option>
+                            <option value="Outros">Outros...</option>
                         </select>
+                        <div id="custom-unit-container-${id}" class="hidden mt-1">
+                            <input type="text" placeholder="Qual?" data-field="custom-unit"
+                                   class="w-full rounded-lg border border-emerald-300 px-2 py-1 text-[10px] focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white">
+                        </div>
                     </div>
                 </div>
 
@@ -582,24 +451,16 @@ function doOptions(e) {
 
                 <!-- Linha 3: Foto e Miniatura com Alinhamento -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100 pt-3">
-                    <div class="flex items-center gap-3 flex-grow">
+                    <div class="flex items-center gap-3 flex-grow flex-wrap">
                         <div class="relative overflow-hidden bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 cursor-pointer flex items-center gap-1.5 transition-all">
                             <i data-lucide="camera" class="w-4 h-4 text-slate-400"></i>
                             <span>Anexar Foto</span>
-                            <input type="file" accept="image/*" onchange="previewImage(${id}, this)"
+                            <input type="file" accept="image/*" multiple onchange="previewImages(${id}, this)"
                                    class="absolute inset-0 opacity-0 cursor-pointer">
                         </div>
-                        <div id="preview-container-${id}" class="hidden items-center gap-2">
-                            <div class="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 relative group">
-                                <img id="preview-img-${id}" src="" class="w-full h-full object-cover">
-                            </div>
-                            <span class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
-                                <i data-lucide="check" class="w-3.5 h-3.5"></i> Foto incluída
-                            </span>
-                            <button type="button" onclick="removeImage(${id})" class="text-red-500 hover:text-red-700 p-1">
-                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                            </button>
-                        </div>
+                        
+                        <!-- Lista de fotos anexadas -->
+                        <div id="photos-container-${id}" class="flex flex-wrap gap-1.5 items-center"></div>
                     </div>
                     
                     <!-- Remover Subteste -->
@@ -630,42 +491,37 @@ function doOptions(e) {
             }
         }
 
-        // --- SISTEMA DE PREVIEW E BASE64 PARA FOTOS ---
-        function previewImage(id, input) {
-            const file = input.files[0];
-            if (!file) return;
+        // --- SISTEMA DE PREVIEW E BASE64 PARA MÚLTIPLAS FOTOS ---
+        function previewImages(id, input) {
+            const files = input.files;
+            if (!files || files.length === 0) return;
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Data = e.target.result;
-                const container = document.getElementById(`preview-container-${id}`);
-                const img = document.getElementById(`preview-img-${id}`);
-                
-                img.src = base64Data;
-                container.classList.remove('hidden');
-                container.classList.add('flex');
-                
-                // Salva a string Base64 no próprio elemento para facilitar o resgate posterior
-                document.getElementById(`test-row-${id}`).setAttribute('data-photo', base64Data);
-                showToast("Foto associada ao teste!");
-            };
-            reader.readAsDataURL(file);
-        }
+            const container = document.getElementById(`photos-container-${id}`);
 
-        function removeImage(id) {
-            const container = document.getElementById(`preview-container-${id}`);
-            const img = document.getElementById(`preview-img-${id}`);
-            img.src = '';
-            container.classList.add('hidden');
-            container.classList.remove('flex');
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Data = e.target.result;
+                    
+                    // Cria o container individual da miniatura
+                    const thumbDiv = document.createElement('div');
+                    thumbDiv.className = 'w-10 h-10 rounded-lg overflow-hidden border border-slate-200 relative group flex-shrink-0';
+                    thumbDiv.innerHTML = `
+                        <img src="${base64Data}" class="preview-thumb-img w-full h-full object-cover">
+                        <button type="button" onclick="this.parentElement.remove();" 
+                                class="absolute top-0 right-0 bg-red-600 hover:bg-red-700 text-white p-0.5 rounded-bl opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center">
+                            <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    `;
+                    container.appendChild(thumbDiv);
+                };
+                reader.readAsDataURL(file);
+            });
             
-            const row = document.getElementById(`test-row-${id}`);
-            row.removeAttribute('data-photo');
-            
-            // Limpa o input file
-            const fileInput = row.querySelector('input[type="file"]');
-            if (fileInput) fileInput.value = '';
-            showToast("Foto removida.");
+            showToast("Foto(s) adicionada(s) com sucesso!");
+            input.value = ''; // Reseta input para permitir carregar arquivos iguais novamente
         }
 
         // --- ATUALIZAÇÃO DOS ESTATÍSTICOS ---
@@ -680,12 +536,11 @@ function doOptions(e) {
                 rec.tests.forEach(t => {
                     totalTests++;
                     const qty = parseFloat(t.qty) || 0;
-                    if (t.unit === 'Litros') {
-                        totalLiters += qty;
-                    } else if (t.unit === 'KG') {
-                        totalKg += qty;
-                    } else if (t.unit === 'Gramas') {
-                        totalKg += (qty / 1000);
+                    if (t.unit === 'Litros' || t.unit === 'ml') {
+                        // Converte ml para litros na métrica geral se for ml
+                        totalLiters += (t.unit === 'ml' ? qty / 1000 : qty);
+                    } else if (t.unit === 'KG' || t.unit === 'Gramas') {
+                        totalKg += (t.unit === 'Gramas' ? qty / 1000 : qty);
                     }
                 });
             });
@@ -737,11 +592,18 @@ function doOptions(e) {
                 const name = row.querySelector('[data-field="name"]').value.trim();
                 const mudas = parseInt(row.querySelector('[data-field="mudas"]').value) || 0;
                 const qty = parseFloat(row.querySelector('[data-field="qty"]').value) || 0;
-                const unit = row.querySelector('[data-field="unit"]').value;
-                const result = row.querySelector('[data-field="result"]').value.trim();
-                const photo = row.getAttribute('data-photo') || ''; // Recupera o Base64 se houver
+                
+                const unitSelect = row.querySelector('[data-field="unit"]').value;
+                const unit = unitSelect === 'Outros'
+                    ? row.querySelector('[data-field="custom-unit"]').value.trim()
+                    : unitSelect;
 
-                if (!name || qty <= 0 || !result) {
+                const result = row.querySelector('[data-field="result"]').value.trim();
+                
+                // Coleta todas as fotos anexadas (como base64) para esta linha de teste
+                const photos = Array.from(row.querySelectorAll('.preview-thumb-img')).map(img => img.src);
+
+                if (!name || qty <= 0 || !result || (unitSelect === 'Outros' && !unit)) {
                     validationPassed = false;
                     return;
                 }
@@ -752,7 +614,7 @@ function doOptions(e) {
                     qty,
                     unit,
                     result,
-                    photo
+                    photos
                 });
             });
 
@@ -773,10 +635,10 @@ function doOptions(e) {
             renderRecords();
             updateStats();
 
-            if (googleSheetsWebhookUrl) {
+            if (googleSheetsWebhookUrl && googleSheetsWebhookUrl !== 'SUA_URL_DO_APPS_SCRIPT_AQUI') {
                 await sendToGoogleSheets(record);
             } else {
-                showToast("Monitoramento salvo localmente! Configure uma URL de planilha para automação.", "success");
+                showToast("Monitoramento salvo localmente! Envie-me a URL do seu script para ativar o envio automático.", "success");
             }
 
             clearForm();
@@ -802,7 +664,7 @@ function doOptions(e) {
                 Unidade: t.unit,
                 Mudas: t.mudas,
                 Resultado: t.result,
-                Foto: t.photo ? "[Foto Anexa]" : "[Sem Foto]"
+                Foto: t.photos && t.photos.length > 0 ? `[${t.photos.length} Fotos Anexas]` : "[Sem Foto]"
             }));
 
             try {
@@ -867,12 +729,19 @@ function doOptions(e) {
 
                 let testsHTML = '';
                 rec.tests.forEach(t => {
-                    // Se houver foto, renderizar a miniatura de forma elegante
-                    const imgHTML = t.photo 
-                        ? `<div class="mt-2.5 w-full max-w-[200px] rounded-xl overflow-hidden border border-slate-200">
-                               <img src="${t.photo}" class="w-full h-auto object-cover max-h-[120px] hover:scale-105 transition-all cursor-pointer" onclick="viewPhotoModal('${t.photo}')">
-                           </div>`
-                        : '';
+                    // Renderiza múltiplas miniaturas de fotos anexadas se existirem
+                    let listPhotosHTML = '';
+                    if (t.photos && t.photos.length > 0) {
+                        listPhotosHTML = `<div class="flex flex-wrap gap-2 mt-2">`;
+                        t.photos.forEach(photo => {
+                            listPhotosHTML += `
+                                <div class="w-12 h-12 rounded-lg overflow-hidden border border-slate-200 relative group flex-shrink-0 shadow-sm">
+                                    <img src="${photo}" class="w-full h-full object-cover hover:scale-105 transition-all cursor-pointer" onclick="viewPhotoModal('${photo}')">
+                                </div>
+                            `;
+                        });
+                        listPhotosHTML += `</div>`;
+                    }
 
                     testsHTML += `
                         <div class="py-4 border-b border-slate-100 last:border-0 space-y-2">
@@ -884,7 +753,7 @@ function doOptions(e) {
                                 </div>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-line">${t.result}</p>
-                            ${imgHTML}
+                            ${listPhotosHTML}
                         </div>
                     `;
                 });
@@ -953,7 +822,7 @@ function doOptions(e) {
             modal.classList.remove('hidden');
         }
 
-        // --- MONTAGEM DE EXPORTAÇÃO INDIVIDUAL COM FOTO ---
+        // --- MONTAGEM DE EXPORTAÇÃO INDIVIDUAL COM MÚLTIPLAS FOTOS ---
         function buildSingleReportContent(record) {
             const formatDate = (dateStr) => {
                 const [year, month, day] = dateStr.split('-');
@@ -961,9 +830,14 @@ function doOptions(e) {
             };
 
             let testsRowsHTML = record.tests.map(t => {
-                const imgHTML = t.photo
-                    ? `<div class="mt-3"><img src="${t.photo}" class="rounded-xl border border-slate-200 max-h-[180px] w-auto max-w-full"></div>`
-                    : '';
+                let imagesHTML = '';
+                if (t.photos && t.photos.length > 0) {
+                    imagesHTML = `<div class="flex flex-wrap gap-2 mt-3">`;
+                    t.photos.forEach(photo => {
+                        imagesHTML += `<img src="${photo}" class="rounded-xl border border-slate-200 max-h-[140px] w-auto">`;
+                    });
+                    imagesHTML += `</div>`;
+                }
 
                 return `
                     <div class="bg-white p-5 rounded-xl border border-slate-150 shadow-sm space-y-2">
@@ -975,7 +849,7 @@ function doOptions(e) {
                             </div>
                         </div>
                         <p class="text-xs text-slate-600 whitespace-pre-line leading-relaxed">${t.result}</p>
-                        ${imgHTML}
+                        ${imagesHTML}
                     </div>
                 `;
             }).join('');
@@ -1000,7 +874,7 @@ function doOptions(e) {
             `;
         }
 
-        // --- MONTAGEM DE EXPORTAÇÃO GERAL CONSOLIDADA COM FOTO ---
+        // --- MONTAGEM DE EXPORTAÇÃO GERAL CONSOLIDADA ---
         function buildGeneralReportContent() {
             const formatDate = (dateStr) => {
                 const [year, month, day] = dateStr.split('-');
@@ -1009,8 +883,8 @@ function doOptions(e) {
 
             let blockSummaries = testRecords.map(rec => {
                 let testsSubRows = rec.tests.map(t => {
-                    const imgIndicator = t.photo 
-                        ? `<span class="inline-block text-[10px] text-emerald-700 bg-emerald-50 font-bold rounded px-1.5 py-0.5 ml-2">[Com Imagem]</span>`
+                    const imgIndicator = t.photos && t.photos.length > 0 
+                        ? `<span class="inline-block text-[10px] text-emerald-700 bg-emerald-50 font-bold rounded px-1.5 py-0.5 ml-2">[${t.photos.length} Fotos]</span>`
                         : '';
 
                     return `
