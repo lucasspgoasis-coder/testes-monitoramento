@@ -1,1096 +1,1051 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Teste - Fazenda Oásis</title>
-    <!-- Tailwind CSS para Estilização de Alta Qualidade -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter para interface moderna e Playfair para títulos elegantes -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <!-- Font Awesome para ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- html2canvas para exportação JPEG -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- jsPDF para exportação em PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fazenda Oásis - Registro de Testes Agrícolas</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome para Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Bibliotecas para exportação -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            oasis: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
     
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .title-font {
-            font-family: 'Playfair Display', serif;
-        }
-        /* Custom scrollbar para uma interface mais polida */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
+    .pdf-table-row {
+      page-break-inside: avoid !important;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
 </head>
-<body class="bg-stone-50 text-stone-800 min-h-screen flex flex-col">
+<body class="text-slate-800 min-h-screen flex flex-col">
 
-    <!-- CABEÇALHO -->
-    <header class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white shadow-md border-b-4 border-amber-500">
-        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-4">
-                <div class="flex items-center justify-center bg-transparent p-0 border-0 outline-none">
-                    <img src="https://i.imgur.com/wEozr34.png" alt="Fazenda Oásis" class="h-16 sm:h-20 w-auto object-contain bg-transparent border-0 outline-none" onerror="this.onerror=null; this.src='https://placehold.co/120x50/ffffff/047857?text=Oásis';">
-                </div>
-                <div>
-                    <h1 class="text-3xl font-extrabold tracking-tight title-font">Registro de Teste</h1>
-                    <div class="flex items-center gap-3 mt-1 flex-wrap">
-                        <p class="text-emerald-200 text-sm tracking-wider font-medium uppercase">Fazenda Oásis &bull; Gestão Agrícola</p>
-                    </div>
-                </div>
-            </div>
-            <div class="flex gap-3 text-xs sm:text-sm">
-                <span class="bg-emerald-700/50 px-3 py-1.5 rounded-full border border-emerald-500/30 flex items-center gap-2">
-                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Sistema Ativo
-                </span>
-                <span class="bg-emerald-700/50 px-3 py-1.5 rounded-full border border-emerald-500/30" id="current-date">
-                    --/--/----
-                </span>
-            </div>
-        </div>
-    </header>
-
-    <!-- CONTAINER PRINCIPAL -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        
-        <!-- GRID DE ENTRADA E PREVIEW -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            <!-- COLUNA ESQUERDA: FORMULÁRIO -->
-            <section class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-stone-200/80 p-6">
-                <div class="flex justify-between items-center pb-4 mb-6 border-b border-stone-100">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-pen-to-square text-emerald-600 text-xl"></i>
-                        <h2 class="text-lg font-bold text-stone-800" id="form-title">Dados do Lote e Aplicação</h2>
-                    </div>
-                    <span id="edit-indicator" class="hidden bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-md font-semibold flex items-center gap-1">
-                        <i class="fa-solid fa-pen"></i> Editando Modo
-                    </span>
-                </div>
-
-                <form id="registro-form" class="space-y-5" onsubmit="event.preventDefault();">
-                    
-                    <!-- Bloco e Número do Teste -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="bloco" class="block text-sm font-semibold text-stone-700 mb-1">
-                                <i class="fa-solid fa-cubes text-emerald-600 mr-1.5"></i>Bloco <span class="text-rose-500">*</span>
-                            </label>
-                            <select id="bloco" name="bloco" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-800 font-medium" required>
-                                <option value="" disabled selected>Selecione o Bloco...</option>
-                                <option value="01">Bloco 01</option>
-                                <option value="02">Bloco 02</option>
-                                <option value="03">Bloco 03</option>
-                                <option value="04">Bloco 04</option>
-                                <option value="05">Bloco 05</option>
-                                <option value="06">Bloco 06</option>
-                                <option value="07">Bloco 07</option>
-                                <option value="08">Bloco 08</option>
-                                <option value="09">Bloco 09</option>
-                                <option value="10">Bloco 10</option>
-                                <option value="11">Bloco 11</option>
-                                <option value="12">Bloco 12</option>
-                                <option value="13">Bloco 13</option>
-                                <option value="14">Bloco 14</option>
-                                <option value="15">Bloco 15</option>
-                                <option value="16">Bloco 16</option>
-                                <option value="17">Bloco 17</option>
-                                <option value="18">Bloco 18</option>
-                                <option value="outros">Outros (Digitar)...</option>
-                            </select>
-                            
-                            <!-- Campo para Bloco Customizado -->
-                            <div id="bloco_outro_container" class="hidden mt-2">
-                                <input type="text" id="bloco_outro" placeholder="Especifique o Bloco..." class="w-full bg-stone-50 border border-stone-300 rounded-lg py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="identificador_teste" class="block text-sm font-semibold text-stone-700 mb-1">
-                                <i class="fa-solid fa-flask text-emerald-600 mr-1.5"></i>Nº do Teste <span class="text-rose-500">*</span>
-                            </label>
-                            <input type="text" id="identificador_teste" name="identificador_teste" placeholder="Ex: Teste 01, Teste B..." class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" required>
-                        </div>
-                    </div>
-
-                    <!-- Cultura e Variedade -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="cultura" class="block text-sm font-semibold text-stone-700 mb-1">
-                                <i class="fa-solid fa-seedling text-emerald-600 mr-1.5"></i>Cultura <span class="text-rose-500">*</span>
-                            </label>
-                            <select id="cultura" name="cultura" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-800 font-medium" required>
-                                <option value="" disabled selected>Selecione...</option>
-                                <option value="Brócolis">Brócolis</option>
-                                <option value="Couve Flor">Couve Flor</option>
-                                <option value="outros">Outros (Digitar)...</option>
-                            </select>
-                            
-                            <!-- Campo para Cultura Customizada -->
-                            <div id="cultura_outro_container" class="hidden mt-2">
-                                <input type="text" id="cultura_outro" placeholder="Qual a cultura?" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="variedade" class="block text-sm font-semibold text-stone-700 mb-1">
-                                <i class="fa-solid fa-dna text-emerald-600 mr-1.5"></i>Variedade <span class="text-rose-500">*</span>
-                            </label>
-                            <select id="variedade" name="variedade" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-800 font-medium" required>
-                                <option value="" disabled selected>Selecione...</option>
-                                <option value="Bro 68 syngenta">Bro 68 syngenta</option>
-                                <option value="TSV Master">TSV Master</option>
-                                <option value="Jiraya">Jiraya</option>
-                                <option value="Pharlap">Pharlap</option>
-                                <option value="outros">Outros (Digitar)...</option>
-                            </select>
-
-                            <!-- Campo para Variedade Customizada -->
-                            <div id="variedade_outro_container" class="hidden mt-2">
-                                <input type="text" id="variedade_outro" placeholder="Qual a variedade?" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Campo: Aplicação -->
-                    <div>
-                        <label for="aplicacao" class="block text-sm font-semibold text-stone-700 mb-1">
-                            <i class="fa-solid fa-spray-can-sparkles text-emerald-600 mr-1.5"></i>Aplicação <span class="text-rose-500">*</span>
-                        </label>
-                        <input type="text" id="aplicacao" name="aplicacao" placeholder="Ex: Nutrição Foliar, Defensivo, Enraizador..." class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" required>
-                    </div>
-
-                    <!-- Grid: Total Mudas e Total Canteiros -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="total_mudas" class="block text-sm font-semibold text-stone-700 mb-1">
-                                <i class="fa-solid fa-arrow-up-9-1 text-emerald-600 mr-1.5"></i>Total Mudas <span class="text-rose-500">*</span>
-                            </label>
-                            <input type="number" id="total_mudas" name="total_mudas" min="1" placeholder="Ex: 500" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" required>
-                        </div>
-                        <div>
-                            <label for="total_canteiros" class="block text-sm font-semibold text-stone-700 mb-1">
-                                <i class="fa-solid fa-grip-lines text-emerald-600 mr-1.5"></i>Total Canteiros <span class="text-rose-500">*</span>
-                            </label>
-                            <input type="number" id="total_canteiros" name="total_canteiros" min="1" placeholder="Ex: 10" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" required>
-                        </div>
-                    </div>
-
-                    <!-- Grid: Dosagem e Unidade -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="dosagem" class="block text-sm font-semibold text-stone-700 mb-1">
-                                <i class="fa-solid fa-vial text-emerald-600 mr-1.5"></i>Dosagem <span class="text-rose-500">*</span>
-                            </label>
-                            <input type="number" step="0.001" min="0.001" id="dosagem" name="dosagem" placeholder="Ex: 2.5" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" required>
-                        </div>
-                        <div>
-                            <label for="unidade" class="block text-sm font-semibold text-stone-700 mb-1">
-                                <i class="fa-solid fa-weight-scale text-emerald-600 mr-1.5"></i>Unidade <span class="text-rose-500">*</span>
-                            </label>
-                            <select id="unidade" name="unidade" class="w-full bg-stone-50 border border-stone-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-800 font-medium" required>
-                                <option value="" disabled selected>Unid...</option>
-                                <option value="g">Gramas (g)</option>
-                                <option value="kg">Quilos (kg)</option>
-                                <option value="L">Litros (L)</option>
-                                <option value="ml">Mililitros (ml)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Botões de Salvar, Cancelar e Limpar -->
-                    <div class="flex flex-col gap-3 pt-2">
-                        <div class="flex gap-3">
-                            <button type="button" id="btn-cancelar" onclick="cancelEditing()" class="hidden flex-1 py-2 px-4 bg-stone-200 hover:bg-stone-300 text-stone-700 font-semibold rounded-lg transition-colors border border-stone-300 flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-xmark"></i> Cancelar
-                            </button>
-                            <button type="button" id="btn-limpar" onclick="resetForm()" class="flex-1 py-2 px-4 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-lg transition-colors border border-stone-200 flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-eraser"></i> Limpar
-                            </button>
-                        </div>
-                        <button type="button" id="btn-salvar" onclick="saveToHistory()" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-floppy-disk" id="btn-salvar-icon"></i> <span id="btn-salvar-text">Salvar Teste</span>
-                        </button>
-                    </div>
-
-                </form>
-            </section>
-
-            <!-- COLUNA DIREITA: CARTÃO PREVIEW PARA EXPORTAÇÃO -->
-            <section class="lg:col-span-7 flex flex-col gap-6">
-                
-                <!-- Ações de Exportação -->
-                <div class="bg-white rounded-xl shadow-sm border border-stone-200/80 p-4 flex flex-wrap gap-3 justify-between items-center">
-                    <span class="text-sm font-semibold text-stone-600 flex items-center gap-2">
-                        <i class="fa-solid fa-file-export text-emerald-600"></i>
-                        Exportar Relatório Atual:
-                    </span>
-                    <div class="flex gap-2">
-                        <button onclick="exportAsJPEG()" class="bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-sm flex items-center gap-2">
-                            <i class="fa-solid fa-image text-base"></i> Baixar JPEG
-                        </button>
-                        <button onclick="exportAsPDF()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-sm flex items-center gap-2">
-                            <i class="fa-solid fa-file-pdf text-base"></i> Baixar PDF
-                        </button>
-                    </div>
-                </div>
-
-                <!-- RELATÓRIO PREVIEW (O container exato que será capturado pelas bibliotecas) -->
-                <div id="capture-area" class="bg-white rounded-2xl border-2 border-stone-300/60 shadow-lg p-8 relative overflow-hidden flex flex-col justify-between" style="min-height: 520px;">
-                    
-                    <!-- Elementos Decorativos de Background -->
-                    <div class="absolute top-0 right-0 w-48 h-48 bg-emerald-50/50 rounded-full -mr-16 -mt-16 -z-0"></div>
-                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-amber-50/50 rounded-full -ml-12 -mb-12 -z-0"></div>
-
-                    <div class="relative z-10">
-                        <!-- Cabeçalho do Cartão -->
-                        <div class="flex justify-between items-start border-b-2 border-emerald-800/20 pb-5">
-                            <div>
-                                <h3 class="text-stone-500 text-xs font-bold uppercase tracking-widest">Relatório Técnico</h3>
-                                <h2 class="text-2xl font-bold text-emerald-900 title-font mt-0.5">Registro de Teste</h2>
-                                <div class="flex items-center gap-2 mt-2">
-                                    <img src="https://i.imgur.com/wEozr34.png" alt="Fazenda Oásis" class="h-8 w-auto object-contain bg-transparent border-0 outline-none" onerror="this.onerror=null; this.classList.add('hidden');">
-                                    <span class="text-amber-700 text-xs font-extrabold tracking-wider uppercase title-font">Fazenda Oásis</span>
-                                </div>
-                            </div>
-                            <div class="text-right flex flex-col items-end">
-                                <span class="bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider block" id="preview-status">
-                                    Em Preenchimento
-                                </span>
-                                <p class="text-stone-400 text-[10px] mt-2" id="preview-time">Gerado agora</p>
-                            </div>
-                        </div>
-
-                        <!-- Indicador Visual do Bloco Selecionado -->
-                        <div class="mt-6 bg-gradient-to-r from-emerald-50 to-teal-50/60 p-4 rounded-xl border border-emerald-100 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="bg-emerald-600 text-white p-2.5 rounded-lg">
-                                    <i class="fa-solid fa-cubes text-lg"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-stone-500 font-medium uppercase">Setor / Identificação do Teste</p>
-                                    <p class="text-base font-bold text-stone-800" id="preview-bloco-teste">---</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xs text-stone-500 font-medium uppercase">Tipo de Aplicação</p>
-                                <p class="text-base font-bold text-stone-800" id="preview-aplicacao">---</p>
-                            </div>
-                        </div>
-
-                        <!-- Grid de Dados de Atividade -->
-                        <div class="grid grid-cols-2 gap-4 mt-6">
-                            
-                            <!-- Card Total Mudas -->
-                            <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200/60 flex items-center gap-3">
-                                <div class="text-emerald-700 bg-emerald-100/65 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold shrink-0">
-                                    <i class="fa-solid fa-seedling"></i>
-                                </div>
-                                <div>
-                                    <span class="text-[11px] text-stone-500 block font-medium uppercase">Total de Mudas</span>
-                                    <span class="text-lg font-extrabold text-stone-800" id="preview-total-mudas">0</span>
-                                </div>
-                            </div>
-
-                            <!-- Card Total Canteiros -->
-                            <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200/60 flex items-center gap-3">
-                                <div class="text-emerald-700 bg-emerald-100/65 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold shrink-0">
-                                    <i class="fa-solid fa-grip-lines"></i>
-                                </div>
-                                <div>
-                                    <span class="text-[11px] text-stone-500 block font-medium uppercase">Canteiros Ativos</span>
-                                    <span class="text-lg font-extrabold text-stone-800" id="preview-total-canteiros">0</span>
-                                </div>
-                            </div>
-
-                            <!-- Card Cultura & Variedade -->
-                            <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200/60 flex items-center gap-3 col-span-2">
-                                <div class="text-emerald-700 bg-emerald-100/65 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold shrink-0">
-                                    <i class="fa-solid fa-leaf"></i>
-                                </div>
-                                <div class="overflow-hidden w-full">
-                                    <span class="text-[11px] text-stone-500 block font-medium uppercase">Cultura / Variedade</span>
-                                    <span class="text-base font-extrabold text-stone-800 block truncate" id="preview-especificacao-muda">---</span>
-                                </div>
-                            </div>
-
-                            <!-- Card Dosagem Científica -->
-                            <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200/60 flex items-center gap-3 col-span-2">
-                                <div class="text-amber-700 bg-amber-100/65 w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold shrink-0">
-                                    <i class="fa-solid fa-vial"></i>
-                                </div>
-                                <div>
-                                    <span class="text-[11px] text-stone-500 block font-medium uppercase">Dosagem / Unidade Aplicada</span>
-                                    <span class="text-base font-extrabold text-stone-800" id="preview-dosagem-unidade">0 g</span>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- KPI: Inteligência do Teste -->
-                        <div class="mt-6 p-4 bg-amber-500/10 rounded-xl border border-amber-500/20 grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-[11px] text-stone-500 font-semibold uppercase">Mudas / Canteiro</p>
-                                <p class="text-lg font-extrabold text-amber-900" id="preview-calculo-densidade">0.0</p>
-                            </div>
-                            <div>
-                                <p class="text-[11px] text-stone-500 font-semibold uppercase">Proporção Dose/Muda</p>
-                                <p class="text-lg font-extrabold text-amber-900" id="preview-calculo-dose-proporcional">0.00</p>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Rodapé do Cartão Autenticado -->
-                    <div class="border-t border-stone-150 pt-5 mt-6 flex justify-between items-center text-[11px] text-stone-500 relative z-10">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-shield-halved text-emerald-600"></i>
-                            <span>Registro Autenticado e Assinado</span>
-                        </div>
-                        <div class="font-bold text-stone-700">
-                            F. OÁSIS TECNOLOGIA
-                        </div>
-                    </div>
-
-                </div>
-
-            </section>
-
-        </div>
-
-        <!-- SEÇÃO: HISTÓRICO DE REGISTROS -->
-        <section class="mt-12 bg-white rounded-2xl shadow-sm border border-stone-200/80 p-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 mb-6 border-b border-stone-100">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-emerald-600 text-xl"></i>
-                    <div>
-                        <h2 class="text-lg font-bold text-stone-800">Histórico de Testes Recentes</h2>
-                        <p class="text-xs text-stone-500">Registros gravados localmente neste navegador</p>
-                    </div>
-                </div>
-                <button onclick="clearHistory()" class="text-xs font-semibold text-rose-600 hover:text-rose-700 border border-rose-200 hover:bg-rose-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-                    <i class="fa-solid fa-trash-can"></i> Limpar Histórico
-                </button>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-stone-200 text-stone-500 text-xs font-semibold uppercase tracking-wider bg-stone-50">
-                            <th class="py-3 px-4 rounded-l-lg">Data / Hora</th>
-                            <th class="py-3 px-4">Local / Teste</th>
-                            <th class="py-3 px-4">Cultura / Variedade</th>
-                            <th class="py-3 px-4">Aplicação</th>
-                            <th class="py-3 px-4">Mudas / Canteiros</th>
-                            <th class="py-3 px-4 text-center">Dosagem</th>
-                            <th class="py-3 px-4 text-right rounded-r-lg">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-rows" class="divide-y divide-stone-100 text-sm">
-                        <!-- Linhas dinâmicas preenchidas via JS -->
-                    </tbody>
-                </table>
-                
-                <!-- Estado Vazio -->
-                <div id="no-history-state" class="py-12 text-center text-stone-400">
-                    <i class="fa-solid fa-folder-open text-4xl mb-3 text-stone-300"></i>
-                    <p class="font-medium text-stone-500">Nenhum registro encontrado.</p>
-                    <p class="text-xs text-stone-400 mt-1">Preencha o formulário acima e clique em "Salvar Teste".</p>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-    <!-- MODAL DE CONFIRMAÇÃO SEGURO (Substituto do window.confirm) -->
-    <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-stone-200 transform scale-95 transition-all duration-300">
-            <div class="flex items-center gap-3 text-amber-600 mb-4">
-                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
-                <h3 class="text-lg font-bold text-stone-900">Confirmar Ação</h3>
-            </div>
-            <p id="confirm-modal-message" class="text-sm text-stone-600 mb-6">Deseja realmente prosseguir?</p>
-            <div class="flex justify-end gap-3">
-                <button id="confirm-modal-cancel" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-lg text-sm transition-colors">
-                    Cancelar
-                </button>
-                <button id="confirm-modal-confirm" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-lg text-sm transition-colors shadow-sm">
-                    Confirmar
-                </button>
-            </div>
-        </div>
+  <!-- NOTIFICAÇÃO PERSONALIZADA (TOAST) -->
+  <div id="custom-toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-800 max-w-sm">
+      <div id="toast-icon" class="text-emerald-400 text-lg">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <p id="toast-message" class="text-sm font-medium"></p>
     </div>
+  </div>
 
-    <!-- RODAPÉ DA PÁGINA -->
-    <footer class="bg-stone-900 text-stone-400 text-xs py-8 border-t border-stone-850 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-            <div>
-                <p class="font-bold text-stone-300 title-font text-sm">Fazenda Oásis &copy; 2026</p>
-                <p class="mt-1 text-stone-500">Tecnologia avançada para monitoramento e controle de produção hortifrúti.</p>
-            </div>
-            <div>
-                <span class="bg-stone-800 px-3 py-1.5 rounded-md border border-stone-700/60 inline-block">
-                    Desenvolvido para uso interno administrativo.
-                </span>
-            </div>
+  <!-- MODAL DE CONFIRMAÇÃO PERSONALIZADO -->
+  <div id="custom-confirm-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-200">
+      <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xl mb-4">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 id="confirm-title" class="text-lg font-bold text-slate-900 mb-2">Confirmar Ação</h3>
+      <p id="confirm-desc" class="text-slate-600 text-sm mb-6 leading-relaxed">Tem a certeza de que deseja realizar esta operação? Esta ação não pode ser desfeita.</p>
+      <div class="flex gap-3 justify-end">
+        <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-medium text-sm hover:bg-slate-50 transition-colors">Cancelar</button>
+        <button id="confirm-action-btn" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium text-sm transition-colors">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CABEÇALHO PRINCIPAL -->
+  <header class="bg-gradient-to-r from-oasis-800 via-oasis-900 to-emerald-950 text-white shadow-xl relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 py-5 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
+      <div class="flex items-center gap-4 sm:gap-6">
+        <!-- Logotipo Oficial sem fundo/contorno ampliado -->
+        <div class="flex items-center justify-center bg-transparent">
+          <img src="https://i.imgur.com/wEozr34.png" alt="Logotipo Fazenda Oásis" crossorigin="anonymous" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=120&q=80';" class="h-20 sm:h-24 w-auto object-contain">
         </div>
-    </footer>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Registro de Testes</h1>
+          <p class="text-emerald-300 font-semibold tracking-wider text-xs sm:text-sm uppercase flex items-center gap-1.5 mt-0.5">
+            <i class="fa-solid fa-mountain-sun"></i> Fazenda Oásis
+          </p>
+        </div>
+      </div>
+      
+      <div class="flex flex-wrap gap-3 w-full sm:w-auto justify-end">
+        <button onclick="limparFormulario()" class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 bg-emerald-800/60 hover:bg-emerald-800 border border-emerald-700/60 rounded-xl transition-all font-semibold text-sm">
+          <i class="fa-solid fa-circle-plus text-emerald-300"></i> Adicionar Teste
+        </button>
+        <button onclick="abrirModalRelatorioGeral()" class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 bg-amber-600 hover:bg-amber-700 rounded-xl transition-all font-semibold text-sm text-white shadow-lg shadow-amber-900/20">
+          <i class="fa-solid fa-file-invoice text-white"></i> Exportação Geral
+        </button>
+      </div>
+    </div>
+  </header>
 
-    <!-- SCRIPTS LÓGICOS -->
-    <script>
-        // CONFIGURAÇÕES E ESTADOS GLOBAIS
-        let historyData = [];
-        let editingId = null; // Guarda o ID do teste que está sendo editado
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
+    
+    <!-- COLUNA ESQUERDA: FORMULÁRIO -->
+    <section class="lg:col-span-7 flex flex-col gap-6">
+      <div class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
+        <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-2.5 text-slate-800">
+            <span class="p-2 bg-oasis-100 text-oasis-700 rounded-lg text-sm">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </span>
+            <h2 id="form-title" class="font-bold text-base">Ficha Técnica de Teste</h2>
+          </div>
+          <span id="badge-edit" class="hidden text-xs bg-amber-100 text-amber-800 font-semibold px-2.5 py-1 rounded-full border border-amber-200">
+            Modo Edição
+          </span>
+        </div>
 
-        // Inicialização do aplicativo
-        window.onload = function() {
-            // Definir data atual no topo
-            const today = new Date();
-            const formattedDate = today.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            document.getElementById('current-date').innerText = formattedDate;
-            document.getElementById('preview-time').innerText = `Gerado em ${formattedDate} às ${today.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+        <form id="testeForm" onsubmit="salvarTeste(event)" class="p-6 space-y-5">
+          <input type="hidden" id="edit-id" value="">
 
-            // Carregar Histórico existente
-            loadHistory();
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Identificação / Nº do Teste *</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                  <i class="fa-solid fa-hashtag text-xs"></i>
+                </span>
+                <input type="text" id="identificacao_teste" required placeholder="Ex: Teste 01, Teste 02" 
+                  class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium">
+              </div>
+            </div>
 
-            // Configurar Event Listeners para Atualização em Tempo Real do Preview
-            setupRealtimePreview();
-        };
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Bloco *</label>
+              <div class="grid grid-cols-1 gap-2">
+                <select id="bloco" required onchange="checarOutroCampo('bloco')"
+                  class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium bg-white">
+                  <option value="">Selecione o Bloco...</option>
+                  <script>
+                    for(let i=1; i<=18; i++) {
+                      let num = i < 10 ? '0' + i : i;
+                      document.write(`<option value="Bloco ${num}">Bloco ${num}</option>`);
+                    }
+                  </script>
+                  <option value="outro">Outro (digitar)...</option>
+                </select>
+                <input type="text" id="bloco_outro" placeholder="Especifique o Bloco" 
+                  class="hidden w-full px-3.5 py-2.5 border border-amber-300 rounded-xl bg-amber-50/30 focus:ring-2 focus:ring-amber-500 text-sm font-medium transition-all">
+              </div>
+            </div>
+          </div>
 
-        // SETUP DOS EVENT LISTENERS PARA PREVIEW DINÂMICO
-        function setupRealtimePreview() {
-            const trackingIds = [
-                'bloco', 'bloco_outro', 'identificador_teste', 
-                'cultura', 'cultura_outro', 'variedade', 'variedade_outro',
-                'aplicacao', 'total_mudas', 'total_canteiros', 'dosagem', 'unidade'
-            ];
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Cultura *</label>
+              <select id="cultura" required onchange="checarOutroCampo('cultura')"
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium bg-white">
+                <option value="">Selecione...</option>
+                <option value="Brócolis">Brócolis</option>
+                <option value="Couve Flor">Couve Flor</option>
+                <option value="outro">Outros (digitar)...</option>
+              </select>
+              <input type="text" id="cultura_outro" placeholder="Especifique a Cultura" 
+                class="hidden w-full mt-2 px-3.5 py-2.5 border border-amber-300 rounded-xl bg-amber-50/30 focus:ring-2 focus:ring-amber-500 text-sm font-medium transition-all">
+            </div>
 
-            trackingIds.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('input', () => updatePreview());
-                    element.addEventListener('change', () => {
-                        // Tratar campos 'Outros...' de forma proativa
-                        handleOutrosTrigger();
-                        updatePreview();
-                    });
-                }
-            });
-        }
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Variedade *</label>
+              <select id="variedade" required onchange="checarOutroCampo('variedade')"
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium bg-white">
+                <option value="">Selecione...</option>
+                <option value="Bro 68 syngenta">Bro 68 syngenta</option>
+                <option value="TSV Master">TSV Master</option>
+                <option value="Jiraya">Jiraya</option>
+                <option value="Pharlap">Pharlap</option>
+                <option value="outro">Outros (digitar)...</option>
+              </select>
+              <input type="text" id="variedade_outro" placeholder="Especifique a Variedade" 
+                class="hidden w-full mt-2 px-3.5 py-2.5 border border-amber-300 rounded-xl bg-amber-50/30 focus:ring-2 focus:ring-amber-500 text-sm font-medium transition-all">
+            </div>
+          </div>
 
-        // CONTROLADOR DE INPUTS DE DIGITAÇÃO LIVRE ("OUTROS")
-        function handleOutrosTrigger() {
-            // Bloco outro
-            const bloco = document.getElementById('bloco');
-            const blocoOutroCont = document.getElementById('bloco_outro_container');
-            const blocoOutro = document.getElementById('bloco_outro');
-            if (bloco.value === 'outros') {
-                blocoOutroCont.classList.remove('hidden');
-                blocoOutro.setAttribute('required', 'true');
-            } else {
-                blocoOutroCont.classList.add('hidden');
-                blocoOutro.removeAttribute('required');
-            }
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Aplicação *</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                  <i class="fa-solid fa-vial text-xs"></i>
+                </span>
+                <input type="text" id="aplicacao" required placeholder="Ex: Fertirrigação Nitrogênio" 
+                  class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium">
+              </div>
+            </div>
 
-            // Cultura outro
-            const cultura = document.getElementById('cultura');
-            const culturaOutroCont = document.getElementById('cultura_outro_container');
-            const culturaOutro = document.getElementById('cultura_outro');
-            if (cultura.value === 'outros') {
-                culturaOutroCont.classList.remove('hidden');
-                culturaOutro.setAttribute('required', 'true');
-            } else {
-                culturaOutroCont.classList.add('hidden');
-                culturaOutro.removeAttribute('required');
-            }
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Dosagem / Unidade *</label>
+              <div class="flex gap-2">
+                <input type="number" step="any" id="dosagem" required placeholder="Ex: 250" 
+                  class="w-2/3 px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium">
+                <select id="unidade" required onchange="checarOutroCampo('unidade')"
+                  class="w-1/3 px-2 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium bg-white">
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="L">L</option>
+                  <option value="ml">ml</option>
+                  <option value="outro">Outro...</option>
+                </select>
+              </div>
+              <input type="text" id="unidade_outro" placeholder="Unidade" 
+                class="hidden w-full mt-2 px-3.5 py-2.5 border border-amber-300 rounded-xl bg-amber-50/30 focus:ring-2 focus:ring-amber-500 text-sm font-medium transition-all">
+            </div>
+          </div>
 
-            // Variedade outro
-            const variedade = document.getElementById('variedade');
-            const variedadeOutroCont = document.getElementById('variedade_outro_container');
-            const variedadeOutro = document.getElementById('variedade_outro');
-            if (variedade.value === 'outros') {
-                variedadeOutroCont.classList.remove('hidden');
-                variedadeOutro.setAttribute('required', 'true');
-            } else {
-                variedadeOutroCont.classList.add('hidden');
-                variedadeOutro.removeAttribute('required');
-            }
-        }
+          <!-- Modificado para ocupar apenas duas colunas na largura -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Total Canteiros *</label>
+              <input type="number" id="total_canteiros" required placeholder="Ex: 12" 
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium">
+            </div>
 
-        // ATUALIZA A PRÉ-VISUALIZAÇÃO DO CARD INTEIRO
-        function updatePreview() {
-            // Bloco
-            const blocoValue = document.getElementById('bloco').value;
-            const blocoOutroValue = document.getElementById('bloco_outro').value;
-            const blocoFinal = (blocoValue === 'outros') ? blocoOutroValue : (blocoValue ? `Bloco ${blocoValue}` : '');
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mudas por Canteiro (Amostra) *</label>
+              <input type="number" id="mudas" required placeholder="Ex: 150" 
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-oasis-600 focus:border-oasis-600 transition-all text-sm font-medium">
+            </div>
+          </div>
 
-            // Identificação do Teste
-            const testeId = document.getElementById('identificador_teste').value;
+          <div class="flex gap-3 pt-2">
+            <button type="button" onclick="limparFormulario()" class="w-1/3 px-4 py-3 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl transition-all font-semibold text-sm">
+              Limpar
+            </button>
+            <button type="submit" id="submit-btn" class="w-2/3 px-6 py-3 bg-oasis-700 hover:bg-oasis-800 text-white rounded-xl transition-all font-semibold text-sm shadow-md shadow-emerald-800/10 flex items-center justify-center gap-2">
+              <i class="fa-solid fa-circle-plus"></i> Adicionar Teste
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
 
-            // Bloco + Identificação
-            const labelBlocoTeste = document.getElementById('preview-bloco-teste');
-            if (blocoFinal || testeId) {
-                labelBlocoTeste.innerText = `${blocoFinal || '---'} / ${testeId || '---'}`;
-            } else {
-                labelBlocoTeste.innerText = '---';
-            }
+    <!-- COLUNA DIREITA: LIVE PREVIEW -->
+    <section class="lg:col-span-5 flex flex-col gap-6">
+      <div class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden sticky top-6">
+        <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-2.5 text-slate-800">
+            <span class="p-2 bg-oasis-100 text-oasis-700 rounded-lg text-sm">
+              <i class="fa-solid fa-eye"></i>
+            </span>
+            <h2 id="preview-section-title" class="font-bold text-base">Visualização do Teste</h2>
+          </div>
+        </div>
 
-            // Cultura
-            const culturaValue = document.getElementById('cultura').value;
-            const culturaOutroValue = document.getElementById('cultura_outro').value;
-            const culturaFinal = (culturaValue === 'outros') ? culturaOutroValue : culturaValue;
+        <div id="banner-view-historico" class="hidden bg-amber-500 text-white px-6 py-2 flex items-center justify-between">
+          <span class="text-xs font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left"></i> Histórico Ativo
+          </span>
+          <button onclick="limparFormulario()" class="text-[10px] uppercase font-bold tracking-wider hover:underline bg-amber-600 px-2 py-1 rounded">
+            Voltar
+          </button>
+        </div>
 
-            // Variedade
-            const variedadeValue = document.getElementById('variedade').value;
-            const variedadeOutroValue = document.getElementById('variedade_outro').value;
-            const variedadeFinal = (variedadeValue === 'outros') ? variedadeOutroValue : variedadeValue;
-
-            // Cultura + Variedade na Especificação
-            const specEl = document.getElementById('preview-especificacao-muda');
-            if (culturaFinal || variedadeFinal) {
-                specEl.innerText = `${culturaFinal || 'Cultura indefinida'} - ${variedadeFinal || 'Variedade indefinida'}`;
-            } else {
-                specEl.innerText = '---';
-            }
-
-            // Aplicação
-            const aplicacao = document.getElementById('aplicacao').value;
-            document.getElementById('preview-aplicacao').innerText = aplicacao || '---';
-
-            // Total Mudas e Canteiros
-            const mudas = parseInt(document.getElementById('total_mudas').value) || 0;
-            const canteiros = parseInt(document.getElementById('total_canteiros').value) || 0;
-            document.getElementById('preview-total-mudas').innerText = mudas.toLocaleString('pt-BR');
-            document.getElementById('preview-total-canteiros').innerText = canteiros.toLocaleString('pt-BR');
-
-            // Dosagem e Unidade
-            const dosagem = parseFloat(document.getElementById('dosagem').value) || 0;
-            const unidade = document.getElementById('unidade').value || '';
-            document.getElementById('preview-dosagem-unidade').innerText = `${dosagem} ${unidade || 'g'}`;
-
-            // Cálculos Científicos
-            // 1. Mudas por canteiro
-            const densidadeEl = document.getElementById('preview-calculo-densidade');
-            if (canteiros > 0) {
-                densidadeEl.innerText = `${(mudas / canteiros).toFixed(1)} mudas`;
-            } else {
-                densidadeEl.innerText = '0.0';
-            }
-
-            // 2. Proporção Dose / Muda
-            const doseMudaEl = document.getElementById('preview-calculo-dose-proporcional');
-            if (mudas > 0 && dosagem > 0) {
-                doseMudaEl.innerText = `${(dosagem / mudas).toFixed(4)} ${unidade}/muda`;
-            } else {
-                doseMudaEl.innerText = '0.00';
-            }
-
-            updatePreviewStatus();
-        }
-
-        // Muda o status visual do preview baseado no preenchimento do formulário
-        function updatePreviewStatus() {
-            const form = document.getElementById('registro-form');
-            const previewStatus = document.getElementById('preview-status');
+        <div class="p-6">
+          <div id="live-card-container" class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm relative overflow-hidden" style="max-width: 100%;">
+            <div class="absolute right-[-20px] bottom-[-20px] text-slate-100/50 text-8xl pointer-events-none">
+              <i class="fa-solid fa-leaf"></i>
+            </div>
             
-            if (form.checkValidity()) {
-                if (editingId) {
-                    previewStatus.innerText = "Atualizando";
-                    previewStatus.className = "bg-amber-500 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider block";
-                } else {
-                    previewStatus.innerText = "Pronto";
-                    previewStatus.className = "bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider block";
-                }
-            } else {
-                previewStatus.innerText = "Em Preenchimento";
-                previewStatus.className = "bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider block";
-            }
+            <div class="flex justify-between items-start border-b pb-4 mb-4 border-slate-100">
+              <div>
+                <span id="card-identificador" class="text-xs font-bold text-oasis-700 bg-oasis-50 border border-oasis-200 px-2.5 py-1 rounded-md uppercase tracking-wider block w-fit mb-2"># TESTE</span>
+                <h3 id="card-bloco" class="text-xl font-bold text-slate-900">Bloco --</h3>
+                <p class="text-xs text-slate-500 flex items-center gap-1 mt-0.5 uppercase tracking-widest font-semibold">
+                  <i class="fa-solid fa-mountain-sun text-emerald-600"></i> Fazenda Oásis
+                </p>
+              </div>
+              <img src="https://i.imgur.com/wEozr34.png" crossorigin="anonymous" onerror="this.onerror=null; this.src='';" class="h-12 w-auto object-contain">
+            </div>
+
+            <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-sm mb-5">
+              <div>
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Cultura</span>
+                <span id="card-cultura" class="font-semibold text-slate-800 text-sm">--</span>
+              </div>
+              <div>
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Variedade</span>
+                <span id="card-variedade" class="font-semibold text-slate-800 text-sm">--</span>
+              </div>
+              <div>
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Aplicação</span>
+                <span id="card-aplicacao" class="font-semibold text-slate-800 text-sm">--</span>
+              </div>
+              <div>
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Dosagem</span>
+                <span id="card-dosagem" class="font-semibold text-slate-850 text-sm">--</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4 grid grid-cols-2 gap-3 border border-slate-100 text-center mb-4">
+              <div>
+                <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Total Canteiros</span>
+                <span id="card-total-canteiros" class="font-bold text-slate-800 text-base">0</span>
+              </div>
+              <div>
+                <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Mudas por Canteiro</span>
+                <span id="card-mudas-amostra" class="font-bold text-slate-800 text-base">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mt-5">
+            <button onclick="exportarRegistroAtual('jpeg')" class="flex items-center justify-center gap-2 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs transition-all shadow-md">
+              <i class="fa-solid fa-image"></i> Baixar JPEG
+            </button>
+            <button onclick="exportarRegistroAtual('pdf')" class="flex items-center justify-center gap-2 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-xs transition-all shadow-md">
+              <i class="fa-solid fa-file-pdf"></i> Baixar PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- HISTÓRICO -->
+  <section class="max-w-7xl mx-auto px-4 pb-16 w-full">
+    <div class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
+      <div class="border-b border-slate-100 bg-slate-50 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-2.5 text-slate-800">
+          <span class="p-2 bg-oasis-100 text-oasis-700 rounded-lg text-sm">
+            <i class="fa-solid fa-list-check"></i>
+          </span>
+          <div>
+            <h2 class="font-bold text-base">Histórico de Testes Cadastrados</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Gerenciamento dos testes agrícolas locais</p>
+          </div>
+        </div>
+        <div>
+          <span id="historico-contador" class="text-xs bg-slate-200 text-slate-700 px-3 py-1 rounded-full font-bold">0 Registros</span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto w-full">
+        <table class="w-full text-left border-collapse min-w-[800px]">
+          <thead>
+            <tr class="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-wider border-b border-slate-100">
+              <th class="py-4 px-6">Identificação / Bloco</th>
+              <th class="py-4 px-4">Cultura / Variedade</th>
+              <th class="py-4 px-4">Aplicação</th>
+              <th class="py-4 px-4 text-center">Dosagem</th>
+              <th class="py-4 px-4 text-center">Canteiros</th>
+              <th class="py-4 px-4 text-center">Mudas por Canteiro</th>
+              <th class="py-4 px-6 text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="historico-linhas" class="divide-y divide-slate-50 text-sm text-slate-700 font-medium">
+            <tr>
+              <td colspan="7" class="text-center py-10 text-slate-400 font-normal">
+                <i class="fa-solid fa-folder-open text-3xl mb-2.5 block"></i>
+                Nenhum teste registrado localmente.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="https://i.imgur.com/wEozr34.png" crossorigin="anonymous" class="h-10 w-auto opacity-75">
+        <p>&copy; 2026 Fazenda Oásis. Painel de Controle de Testes Agrícolas.</p>
+      </div>
+      <span class="text-emerald-500 font-semibold uppercase tracking-wider">Qualidade e Rigor Técnico</span>
+    </div>
+  </footer>
+
+  <!-- CONTAINERS DE CAPTURA INVISÍVEIS PARA EXPORTAÇÕES SEM QUEBRAS -->
+  
+  <!-- INDIVIDUAL EXPORT CONTAINER -->
+  <div style="position: absolute; left: -9999px; top: -9999px;">
+    <div id="capture-container-individual" class="bg-white p-10 rounded-2xl border-4 border-emerald-800" style="width: 800px; font-family: 'Inter', sans-serif;">
+      <div class="flex justify-between items-center border-b-2 border-slate-100 pb-6 mb-6">
+        <div>
+          <span class="text-sm font-extrabold text-emerald-800 uppercase tracking-widest bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">FAZENDA OÁSIS - TESTE AGRÍCOLA</span>
+          <h2 id="print-indiv-identificador" class="text-3xl font-black text-slate-900 mt-3">TESTE --</h2>
+          <p id="print-indiv-data" class="text-xs text-slate-400 font-semibold mt-1">DATA DE REGISTRO: --</p>
+        </div>
+        <img src="https://i.imgur.com/wEozr34.png" crossorigin="anonymous" class="h-16 w-auto object-contain">
+      </div>
+
+      <div class="grid grid-cols-2 gap-6 bg-slate-50 p-6 rounded-xl border border-slate-100 mb-6">
+        <div>
+          <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Cultura</span>
+          <span id="print-indiv-cultura" class="text-lg font-bold text-slate-800">--</span>
+        </div>
+        <div>
+          <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Variedade</span>
+          <span id="print-indiv-variedade" class="text-lg font-bold text-slate-800">--</span>
+        </div>
+        <div>
+          <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Aplicação</span>
+          <span id="print-indiv-aplicacao" class="text-lg font-bold text-slate-800">--</span>
+        </div>
+        <div>
+          <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Dosagem</span>
+          <span id="print-indiv-dosagem" class="text-lg font-bold text-slate-800">--</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 text-center mb-6">
+        <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
+          <span class="block text-[11px] font-bold text-emerald-800 uppercase tracking-widest mb-1">Bloco</span>
+          <span id="print-indiv-bloco" class="text-2xl font-black text-emerald-950">--</span>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
+          <span class="block text-[11px] font-bold text-emerald-800 uppercase tracking-widest mb-1">Total Canteiros</span>
+          <span id="print-indiv-canteiros" class="text-2xl font-black text-emerald-950">0</span>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-100 pt-6 flex justify-between items-center text-sm">
+        <div>
+          <span class="text-slate-400 block font-medium">Mudas por Canteiro (Amostra)</span>
+          <span id="print-indiv-amostra" class="font-bold text-slate-800 text-lg">0 mudas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE EXPORTAÇÃO GERAL -->
+  <div id="modal-relatorio-geral" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex items-center justify-between border-b pb-4 mb-4 border-slate-100">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-file-invoice text-amber-500"></i> Relatório Geral Consolidado
+        </h3>
+        <button onclick="fecharModalRelatorioGeral()" class="text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-4 mb-6">
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Este processo compila <strong>todos os registros locais</strong> e gera um documento corporativo profissional completo.
+        </p>
+      </div>
+
+      <div class="flex gap-3 justify-end">
+        <button onclick="fecharModalRelatorioGeral()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-medium text-sm hover:bg-slate-50">Cancelar</button>
+        <button onclick="exportarGeral('jpeg')" class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm flex items-center gap-2">
+          <i class="fa-solid fa-file-image"></i> Baixar JPEG Geral
+        </button>
+        <button onclick="exportarGeral('pdf')" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm flex items-center gap-2">
+          <i class="fa-solid fa-file-pdf"></i> Baixar PDF Geral
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RELATÓRIO GERAL EXPORT CONTAINER -->
+  <div style="position: absolute; left: -9999px; top: -9999px;">
+    <div id="capture-container-geral" class="bg-white p-12" style="width: 1200px; font-family: 'Inter', sans-serif;">
+      <div class="flex justify-between items-center border-b-4 border-emerald-800 pb-8 mb-8">
+        <div>
+          <h1 class="text-4xl font-black text-slate-900 tracking-tight">RELATÓRIO GERAL</h1>
+          <p class="text-lg font-bold text-emerald-700 tracking-wider uppercase mt-1">Fazenda Oásis - Gestão de Testes</p>
+          <p id="print-geral-data" class="text-xs text-slate-400 mt-1">Gerado em: --</p>
+        </div>
+        <img src="https://i.imgur.com/wEozr34.png" crossorigin="anonymous" class="h-20 w-auto object-contain">
+      </div>
+
+      <div class="grid grid-cols-2 gap-6 mb-8">
+        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 text-center">
+          <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Registros / Testes Realizados</span>
+          <span id="print-geral-total-testes" class="text-3xl font-black text-slate-800">0</span>
+        </div>
+        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 text-center">
+          <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Soma de Canteiros Avaliados</span>
+          <span id="print-geral-total-canteiros" class="text-3xl font-black text-slate-800">0</span>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wide">
+          <i class="fa-solid fa-table text-emerald-700"></i> Lançamentos Consolidados
+        </h3>
+        <table class="w-full text-left border-collapse border border-slate-200">
+          <thead>
+            <tr class="bg-emerald-900 text-white text-xs font-bold uppercase tracking-wider">
+              <th class="py-3 px-4 border border-emerald-800">ID Teste</th>
+              <th class="py-3 px-4 border border-emerald-800">Bloco</th>
+              <th class="py-3 px-4 border border-emerald-800">Cultura</th>
+              <th class="py-3 px-4 border border-emerald-800">Variedade</th>
+              <th class="py-3 px-4 border border-emerald-800">Aplicação</th>
+              <th class="py-3 px-4 border border-emerald-800 text-center">Dosagem</th>
+              <th class="py-3 px-4 border border-emerald-800 text-center">Canteiros</th>
+              <th class="py-3 px-4 border border-emerald-800 text-center">Mudas / Canteiro (Amostra)</th>
+            </tr>
+          </thead>
+          <tbody id="print-geral-linhas" class="text-xs text-slate-700 font-medium divide-y divide-slate-100">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let registros = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      carregarRegistros();
+      limparFormulario();
+
+      const inputs = [
+        'identificacao_teste', 'bloco', 'bloco_outro', 'cultura', 'cultura_outro', 
+        'variedade', 'variedade_outro', 'aplicacao', 'dosagem', 'unidade', 
+        'unidade_outro', 'total_canteiros', 'mudas'
+      ];
+      inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', atualizarLivePreview);
+          el.addEventListener('change', atualizarLivePreview);
         }
+      });
+    });
 
-        // LIMPAR FORMULÁRIO COMPLETO
-        function resetForm() {
-            document.getElementById('registro-form').reset();
-            
-            // Forçar ocultação dos subcampos customizados
-            document.getElementById('bloco_outro_container').classList.add('hidden');
-            document.getElementById('cultura_outro_container').classList.add('hidden');
-            document.getElementById('variedade_outro_container').classList.add('hidden');
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('custom-toast');
+      const msgEl = document.getElementById('toast-message');
+      const iconEl = document.getElementById('toast-icon');
 
-            // Resetar Elementos do Preview manualmente
-            document.getElementById('preview-bloco-teste').innerText = '---';
-            document.getElementById('preview-aplicacao').innerText = '---';
-            document.getElementById('preview-total-mudas').innerText = '0';
-            document.getElementById('preview-total-canteiros').innerText = '0';
-            document.getElementById('preview-especificacao-muda').innerText = '---';
-            document.getElementById('preview-dosagem-unidade').innerText = '0 g';
-            document.getElementById('preview-calculo-densidade').innerText = '0.0';
-            document.getElementById('preview-calculo-dose-proporcional').innerText = '0.00';
-            
-            updatePreviewStatus();
-            showToast('Formulário limpo!', 'info');
+      msgEl.textContent = message;
+      if (isError) {
+        iconEl.innerHTML = '<i class="fa-solid fa-circle-xmark text-red-400"></i>';
+      } else {
+        iconEl.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+      }
+
+      toast.style.pointerEvents = 'auto';
+      toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-[-100px]', 'opacity-0');
+        toast.style.pointerEvents = 'none';
+      }, 3000);
+    }
+
+    let confirmCallback = null;
+    function openConfirm(title, desc, callback) {
+      confirmCallback = callback;
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-desc').textContent = desc;
+      
+      const modal = document.getElementById('custom-confirm-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    document.getElementById('confirm-cancel-btn').addEventListener('click', () => { fecharConfirm(); });
+    document.getElementById('confirm-action-btn').addEventListener('click', () => {
+      if (confirmCallback) confirmCallback();
+      fecharConfirm();
+    });
+
+    function fecharConfirm() {
+      const modal = document.getElementById('custom-confirm-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      confirmCallback = null;
+    }
+
+    // Gerenciador de Exibição Condicional de Campos "Outros"
+    function checarOutroCampo(field) {
+      const select = document.getElementById(field);
+      const inputOutro = document.getElementById(`${field}_outro`);
+      if (select && inputOutro) {
+        if (select.value === 'outro') {
+          inputOutro.classList.remove('hidden');
+          inputOutro.setAttribute('required', 'true');
+        } else {
+          inputOutro.classList.add('hidden');
+          inputOutro.removeAttribute('required');
+          inputOutro.value = '';
         }
+      }
+    }
 
-        // CANCELAR EDIÇÃO ATIVA
-        function cancelEditing() {
-            editingId = null;
-            document.getElementById('edit-indicator').classList.add('hidden');
-            document.getElementById('btn-cancelar').classList.add('hidden');
-            
-            // Restaurar textos padrões do botão de salvar
-            document.getElementById('btn-salvar-text').innerText = "Salvar Teste";
-            document.getElementById('btn-salvar-icon').className = "fa-solid fa-floppy-disk";
-            document.getElementById('form-title').innerText = "Dados do Lote e Aplicação";
-            
-            resetForm();
-            showToast('Edição cancelada.', 'info');
+    function carregarRegistros() {
+      const dados = localStorage.getItem('fazenda_oasis_testes');
+      registros = dados ? JSON.parse(dados) : [];
+      atualizarListaHistorico();
+    }
+
+    function atualizarListaHistorico() {
+      const tbody = document.getElementById('historico-linhas');
+      const contador = document.getElementById('historico-contador');
+      
+      contador.textContent = `${registros.length} Registro${registros.length !== 1 ? 's' : ''}`;
+
+      if (registros.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center py-10 text-slate-400 font-normal">
+              <i class="fa-solid fa-folder-open text-3xl mb-2.5 block"></i>
+              Nenhum teste registrado localmente.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      registros.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/80 transition-colors border-b border-slate-100';
+        tr.innerHTML = `
+          <td class="py-4 px-6">
+            <span class="block text-slate-900 font-bold text-sm">${r.identificacao_teste}</span>
+            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">${r.bloco}</span>
+          </td>
+          <td class="py-4 px-4">
+            <span class="block text-slate-800 font-semibold">${r.cultura}</span>
+            <span class="text-slate-400 text-xs">${r.variedade}</span>
+          </td>
+          <td class="py-4 px-4 text-slate-600 font-normal">${r.aplicacao}</td>
+          <td class="py-4 px-4 text-center text-slate-900 font-bold">
+            ${r.dosagem} <span class="text-xs text-slate-400 font-medium">${r.unidade}</span>
+          </td>
+          <td class="py-4 px-4 text-center font-bold text-slate-800">${r.total_canteiros}</td>
+          <td class="py-4 px-4 text-center font-bold text-emerald-700 bg-emerald-50/30">${r.mudas}</td>
+          <td class="py-4 px-6 text-right">
+            <div class="flex items-center justify-end gap-1.5">
+              <button onclick="visualizarRegistro('${r.id}')" title="Visualizar" class="p-2 text-slate-500 hover:text-oasis-700 hover:bg-oasis-50 rounded-lg transition-colors">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              <button onclick="editarRegistro('${r.id}')" title="Editar" class="p-2 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button onclick="confirmarExclusao('${r.id}')" title="Apagar" class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function salvarTeste(event) {
+      event.preventDefault();
+
+      const editId = document.getElementById('edit-id').value;
+      const identificacao = document.getElementById('identificacao_teste').value.trim();
+      
+      const blocoSelect = document.getElementById('bloco').value;
+      const bloco = blocoSelect === 'outro' ? document.getElementById('bloco_outro').value.trim() : blocoSelect;
+
+      const culturaSelect = document.getElementById('cultura').value;
+      const cultura = culturaSelect === 'outro' ? document.getElementById('cultura_outro').value.trim() : culturaSelect;
+
+      const variedadSelect = document.getElementById('variedade').value;
+      const variedade = variedadSelect === 'outro' ? document.getElementById('variedade_outro').value.trim() : variedadSelect;
+
+      const aplicacao = document.getElementById('aplicacao').value.trim();
+      const dosagem = parseFloat(document.getElementById('dosagem').value);
+      
+      const unidadeSelect = document.getElementById('unidade').value;
+      const unidade = unidadeSelect === 'outro' ? document.getElementById('unidade_outro').value.trim() : unidadeSelect;
+
+      const total_canteiros = parseInt(document.getElementById('total_canteiros').value);
+      const mudas = parseInt(document.getElementById('mudas').value);
+
+      if(!bloco || !cultura || !variedade || !unidade) {
+        showToast("Preencha todos os campos obrigatórios.", true);
+        return;
+      }
+
+      const registroObj = {
+        id: editId || crypto.randomUUID(),
+        identificacao_teste: identificacao,
+        bloco: bloco,
+        cultura: cultura,
+        variedade: variedade,
+        aplicacao: aplicacao,
+        dosagem: dosagem,
+        unidade: unidade,
+        total_canteiros: total_canteiros,
+        mudas: mudas,
+        data_criacao: new Date().toLocaleDateString('pt-BR')
+      };
+
+      if (editId) {
+        const index = registros.findIndex(r => r.id === editId);
+        if (index !== -1) registros[index] = registroObj;
+        showToast("Registro agrícola atualizado!");
+      } else {
+        registros.unshift(registroObj);
+        showToast("Novo registro salvo!");
+      }
+
+      localStorage.setItem('fazenda_oasis_testes', JSON.stringify(registros));
+      carregarRegistros();
+      
+      // Ao salvar, mantém os dados do bloco/cultura para facilitar "Adicionar outro Teste" no mesmo bloco
+      prepararProximoTesteMesmoBloco(bloco, cultura, variedade, total_canteiros);
+    }
+
+    function prepararProximoTesteMesmoBloco(bloco, cultura, variedade, total_canteiros) {
+      document.getElementById('edit-id').value = '';
+      document.getElementById('identificacao_teste').value = '';
+      document.getElementById('aplicacao').value = '';
+      document.getElementById('dosagem').value = '';
+      document.getElementById('mudas').value = '';
+
+      // Mantém Bloco, Cultura, Variedade e canteiros para agilizar o próximo teste
+      document.getElementById('badge-edit').classList.add('hidden');
+      document.getElementById('form-title').textContent = "Ficha Técnica de Teste";
+      document.getElementById('submit-btn').innerHTML = '<i class="fa-solid fa-circle-plus"></i> Adicionar Teste';
+
+      document.getElementById('preview-section-title').textContent = "Visualização do Teste";
+      document.getElementById('banner-view-historico').classList.add('hidden');
+
+      showToast("Pronto para adicionar outro teste neste mesmo bloco!");
+      atualizarLivePreview();
+    }
+
+    function editarRegistro(id) {
+      const r = registros.find(reg => reg.id === id);
+      if(!r) return;
+
+      document.getElementById('edit-id').value = r.id;
+      document.getElementById('identificacao_teste').value = r.identificacao_teste;
+
+      const blocoSelect = document.getElementById('bloco');
+      if (Array.from(blocoSelect.options).some(opt => opt.value === r.bloco)) {
+        blocoSelect.value = r.bloco;
+        document.getElementById('bloco_outro').classList.add('hidden');
+      } else {
+        blocoSelect.value = 'outro';
+        document.getElementById('bloco_outro').classList.remove('hidden');
+        document.getElementById('bloco_outro').value = r.bloco;
+      }
+
+      const culturaSelect = document.getElementById('cultura');
+      if (Array.from(culturaSelect.options).some(opt => opt.value === r.cultura)) {
+        culturaSelect.value = r.cultura;
+        document.getElementById('cultura_outro').classList.add('hidden');
+      } else {
+        culturaSelect.value = 'outro';
+        document.getElementById('cultura_outro').classList.remove('hidden');
+        document.getElementById('cultura_outro').value = r.cultura;
+      }
+
+      const variedadeSelect = document.getElementById('variedade');
+      if (Array.from(variedadeSelect.options).some(opt => opt.value === r.variedade)) {
+        variedadeSelect.value = r.variedade;
+        document.getElementById('variedade_outro').classList.add('hidden');
+      } else {
+        variedadeSelect.value = 'outro';
+        document.getElementById('variedade_outro').classList.remove('hidden');
+        document.getElementById('variedade_outro').value = r.variedade;
+      }
+
+      const unidadeSelect = document.getElementById('unidade');
+      if (Array.from(unidadeSelect.options).some(opt => opt.value === r.unidade)) {
+        unidadeSelect.value = r.unidade;
+        document.getElementById('unidade_outro').classList.add('hidden');
+      } else {
+        unidadeSelect.value = 'outro';
+        document.getElementById('unidade_outro').classList.remove('hidden');
+        document.getElementById('unidade_outro').value = r.unidade;
+      }
+
+      document.getElementById('aplicacao').value = r.aplicacao;
+      document.getElementById('dosagem').value = r.dosagem;
+      document.getElementById('total_canteiros').value = r.total_canteiros;
+      document.getElementById('mudas').value = r.mudas;
+
+      document.getElementById('badge-edit').classList.remove('hidden');
+      document.getElementById('form-title').textContent = "Editar Registro Técnico";
+      document.getElementById('submit-btn').innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Atualizar Dados';
+
+      document.getElementById('testeForm').scrollIntoView({ behavior: 'smooth' });
+      atualizarLivePreview();
+    }
+
+    function confirmarExclusao(id) {
+      const r = registros.find(reg => reg.id === id);
+      if(!r) return;
+
+      openConfirm(
+        "Eliminar Registro?", 
+        `Deseja apagar permanentemente o teste "${r.identificacao_teste}"?`,
+        () => {
+          registros = registros.filter(reg => reg.id !== id);
+          localStorage.setItem('fazenda_oasis_testes', JSON.stringify(registros));
+          carregarRegistros();
+          limparFormulario();
+          showToast("Registro removido.");
         }
+      );
+    }
 
-        // SALVAR NO HISTÓRICO (localStorage) - CRIAÇÃO E ATUALIZAÇÃO
-        function saveToHistory() {
-            const form = document.getElementById('registro-form');
-            
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                showToast('Preencha todos os campos obrigatórios (*)', 'error');
-                return;
-            }
+    function visualizarRegistro(id) {
+      const r = registros.find(reg => reg.id === id);
+      if(!r) return;
 
-            // Obter e formatar valor final de Bloco
-            const bValue = document.getElementById('bloco').value;
-            const bOutro = document.getElementById('bloco_outro').value;
-            const blocoFinal = (bValue === 'outros') ? bOutro : bValue;
+      document.getElementById('preview-section-title').textContent = "Visualizando Registro";
+      document.getElementById('banner-view-historico').classList.remove('hidden');
 
-            // Obter e formatar valor de Cultura
-            const cValue = document.getElementById('cultura').value;
-            const cOutro = document.getElementById('cultura_outro').value;
-            const culturaFinal = (cValue === 'outros') ? cOutro : cValue;
+      document.getElementById('card-identificador').textContent = r.identificacao_teste;
+      document.getElementById('card-bloco').textContent = r.bloco;
+      document.getElementById('card-cultura').textContent = r.cultura;
+      document.getElementById('card-variedade').textContent = r.variedade;
+      document.getElementById('card-aplicacao').textContent = r.aplicacao;
+      document.getElementById('card-dosagem').textContent = `${r.dosagem} ${r.unidade}`;
+      document.getElementById('card-total-canteiros').textContent = r.total_canteiros;
+      document.getElementById('card-mudas-amostra').textContent = r.mudas;
 
-            // Obter e formatar valor de Variedade
-            const vValue = document.getElementById('variedade').value;
-            const vOutro = document.getElementById('variedade_outro').value;
-            const variedadeFinal = (vValue === 'outros') ? vOutro : vValue;
+      document.getElementById('preview-section-title').scrollIntoView({ behavior: 'smooth' });
+    }
 
-            const registroDados = {
-                bloco: blocoFinal,
-                bloco_selecionado: bValue, // Salva o estado do select para edições futuras
-                bloco_digitado: bOutro,
-                identificador_teste: document.getElementById('identificador_teste').value,
-                cultura: culturaFinal,
-                cultura_selecionada: cValue,
-                cultura_digitada: cOutro,
-                variedade: variedadeFinal,
-                variedade_selecionada: vValue,
-                variedade_digitada: vOutro,
-                aplicacao: document.getElementById('aplicacao').value,
-                total_mudas: parseInt(document.getElementById('total_mudas').value),
-                total_canteiros: parseInt(document.getElementById('total_canteiros').value),
-                dosagem: parseFloat(document.getElementById('dosagem').value),
-                unidade: document.getElementById('unidade').value
-            };
+    function limparFormulario() {
+      document.getElementById('testeForm').reset();
+      document.getElementById('edit-id').value = '';
+      
+      document.getElementById('bloco_outro').classList.add('hidden');
+      document.getElementById('cultura_outro').classList.add('hidden');
+      document.getElementById('variedade_outro').classList.add('hidden');
+      document.getElementById('unidade_outro').classList.add('hidden');
 
-            if (editingId !== null) {
-                // ATUALIZAR REGISTRO EXISTENTE
-                const index = historyData.findIndex(item => item.id === editingId);
-                if (index !== -1) {
-                    historyData[index] = {
-                        ...historyData[index],
-                        ...registroDados,
-                        data_modificacao: new Date().toLocaleString('pt-BR')
-                    };
-                    localStorage.setItem('fazenda_oasis_testes', JSON.stringify(historyData));
-                    showToast('Registro atualizado com sucesso!', 'success');
-                }
-                
-                // Sair do modo edição
-                editingId = null;
-                document.getElementById('edit-indicator').classList.add('hidden');
-                document.getElementById('btn-cancelar').classList.add('hidden');
-                document.getElementById('btn-salvar-text').innerText = "Salvar Teste";
-                document.getElementById('btn-salvar-icon').className = "fa-solid fa-floppy-disk";
-                document.getElementById('form-title').innerText = "Dados do Lote e Aplicação";
-            } else {
-                // SALVAR NOVO REGISTRO
-                const novoRegistro = {
-                    id: Date.now(),
-                    data: new Date().toLocaleString('pt-BR'),
-                    ...registroDados
-                };
+      document.getElementById('badge-edit').classList.add('hidden');
+      document.getElementById('form-title').textContent = "Ficha Técnica de Teste";
+      document.getElementById('submit-btn').innerHTML = '<i class="fa-solid fa-circle-plus"></i> Adicionar Teste';
 
-                historyData.unshift(novoRegistro);
-                localStorage.setItem('fazenda_oasis_testes', JSON.stringify(historyData));
-                showToast('Teste registrado no histórico!', 'success');
-            }
+      document.getElementById('preview-section-title').textContent = "Visualização do Teste";
+      document.getElementById('banner-view-historico').classList.add('hidden');
 
-            resetForm();
-            renderHistoryTable();
+      atualizarLivePreview();
+    }
+
+    function atualizarLivePreview() {
+      if (!document.getElementById('banner-view-historico').classList.contains('hidden')) {
+        return;
+      }
+
+      const identificador = document.getElementById('identificacao_teste').value.trim() || 'NOVO TESTE';
+      
+      const blocoSelect = document.getElementById('bloco').value;
+      const bloco = (blocoSelect === 'outro' ? document.getElementById('bloco_outro').value.trim() : blocoSelect) || '--';
+
+      const culturaSelect = document.getElementById('cultura').value;
+      const cultura = (culturaSelect === 'outro' ? document.getElementById('cultura_outro').value.trim() : culturaSelect) || '--';
+
+      const variedadeSelect = document.getElementById('variedade').value;
+      const variedade = (variedadeSelect === 'outro' ? document.getElementById('variedade_outro').value.trim() : variedadeSelect) || '--';
+
+      const aplicacao = document.getElementById('aplicacao').value.trim() || '--';
+      const dosagem = document.getElementById('dosagem').value || '0';
+      
+      const unidadeSelect = document.getElementById('unidade').value;
+      const unidade = unidadeSelect === 'outro' ? document.getElementById('unidade_outro').value.trim() : unidadeSelect;
+
+      const total_canteiros = parseInt(document.getElementById('total_canteiros').value) || 0;
+      const mudas = parseInt(document.getElementById('mudas').value) || 0;
+
+      document.getElementById('card-identificador').textContent = identificador;
+      document.getElementById('card-bloco').textContent = bloco;
+      document.getElementById('card-cultura').textContent = cultura;
+      document.getElementById('card-variedade').textContent = variedade;
+      document.getElementById('card-aplicacao').textContent = aplicacao;
+      document.getElementById('card-dosagem').textContent = `${dosagem} ${unidade}`;
+      document.getElementById('card-total-canteiros').textContent = total_canteiros;
+      document.getElementById('card-mudas-amostra').textContent = mudas;
+    }
+
+    function prepararContainerIndividualParaCaptura() {
+      const identificador = document.getElementById('card-identificador').textContent;
+      const bloco = document.getElementById('card-bloco').textContent;
+      const cultura = document.getElementById('card-cultura').textContent;
+      const variedade = document.getElementById('card-variedade').textContent;
+      const aplicacao = document.getElementById('card-aplicacao').textContent;
+      const dosagem = document.getElementById('card-dosagem').textContent;
+      const canteiros = document.getElementById('card-total-canteiros').textContent;
+      const amostra = document.getElementById('card-mudas-amostra').textContent;
+
+      document.getElementById('print-indiv-identificador').textContent = identificador;
+      document.getElementById('print-indiv-bloco').textContent = bloco;
+      document.getElementById('print-indiv-cultura').textContent = cultura;
+      document.getElementById('print-indiv-variedade').textContent = variedade;
+      document.getElementById('print-indiv-aplicacao').textContent = aplicacao;
+      document.getElementById('print-indiv-dosagem').textContent = dosagem;
+      document.getElementById('print-indiv-canteiros').textContent = canteiros;
+      document.getElementById('print-indiv-amostra').textContent = `${amostra} mudas`;
+      document.getElementById('print-indiv-data').textContent = `DATA: ${new Date().toLocaleDateString('pt-BR')}`;
+    }
+
+    async function exportarRegistroAtual(formato) {
+      prepararContainerIndividualParaCaptura();
+      
+      const element = document.getElementById('capture-container-individual');
+      const identificador = document.getElementById('card-identificador').textContent.replace(/\s+/g, '_').toLowerCase();
+
+      showToast("Gerando documento...");
+
+      try {
+        const canvas = await html2canvas(element, {
+          scale: 2.5,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+        if (formato === 'jpeg') {
+          const link = document.createElement('a');
+          link.href = imgData;
+          link.download = `registro_${identificador}.jpg`;
+          link.click();
+          showToast("Imagem descarregada com sucesso!");
+        } else if (formato === 'pdf') {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [canvas.width / 2.5, canvas.height / 2.5]
+          });
+          pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width / 2.5, canvas.height / 2.5);
+          pdf.save(`registro_${identificador}.pdf`);
+          showToast("Documento PDF guardado!");
         }
+      } catch (err) {
+        showToast("Erro ao processar imagem para exportação.", true);
+      }
+    }
 
-        // CARREGAR HISTÓRICO GERAL
-        function loadHistory() {
-            const stored = localStorage.getItem('fazenda_oasis_testes');
-            if (stored) {
-                historyData = JSON.parse(stored);
-            } else {
-                historyData = [];
-            }
-            renderHistoryTable();
+    function abrirModalRelatorioGeral() {
+      if (registros.length === 0) {
+        showToast("Nenhum registro para exportação.", true);
+        return;
+      }
+      document.getElementById('modal-relatorio-geral').classList.remove('hidden');
+    }
+
+    function fecharModalRelatorioGeral() {
+      document.getElementById('modal-relatorio-geral').classList.add('hidden');
+    }
+
+    function prepararContainerGeralParaCaptura() {
+      document.getElementById('print-geral-data').textContent = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
+      
+      const totalTestes = registros.length;
+      let totalCanteiros = 0;
+
+      const printLines = document.getElementById('print-geral-linhas');
+      printLines.innerHTML = '';
+
+      registros.forEach(r => {
+        totalCanteiros += Number(r.total_canteiros) || 0;
+
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-200 pdf-table-row';
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-900 border border-slate-200">${r.identificacao_teste}</td>
+          <td class="py-3 px-4 font-semibold text-emerald-950 border border-slate-200">${r.bloco}</td>
+          <td class="py-3 px-4 border border-slate-200">${r.cultura}</td>
+          <td class="py-3 px-4 border border-slate-200">${r.variedade}</td>
+          <td class="py-3 px-4 border border-slate-200">${r.aplicacao}</td>
+          <td class="py-3 px-4 text-center border border-slate-200 font-bold">${r.dosagem} ${r.unidade}</td>
+          <td class="py-3 px-4 text-center border border-slate-200">${r.total_canteiros}</td>
+          <td class="py-3 px-4 text-center border border-slate-200 font-bold text-emerald-800">${r.mudas}</td>
+        `;
+        printLines.appendChild(tr);
+      });
+
+      document.getElementById('print-geral-total-testes').textContent = totalTestes;
+      document.getElementById('print-geral-total-canteiros').textContent = totalCanteiros;
+    }
+
+    async function exportarGeral(formato) {
+      fecharModalRelatorioGeral();
+      prepararContainerGeralParaCaptura();
+
+      const element = document.getElementById('capture-container-geral');
+      showToast("Compilando Relatório Geral...");
+
+      try {
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+        if (formato === 'jpeg') {
+          const link = document.createElement('a');
+          link.href = imgData;
+          link.download = `relatorio_geral_fazenda_oasis.jpg`;
+          link.click();
+          showToast("Relatório Geral JPEG salvo!");
+        } else if (formato === 'pdf') {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [canvas.width / 2, canvas.height / 2]
+          });
+
+          pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width / 2, canvas.height / 2);
+          pdf.save(`relatorio_geral_fazenda_oasis.pdf`);
+          showToast("Relatório Geral PDF salvo!");
         }
-
-        // INICIAR EDICAO DO REGISTRO
-        function editRecord(id) {
-            const registro = historyData.find(item => item.id === id);
-            if (!registro) return;
-
-            // Definir estado de edição
-            editingId = id;
-            document.getElementById('edit-indicator').classList.remove('hidden');
-            document.getElementById('btn-cancelar').classList.remove('hidden');
-            document.getElementById('btn-salvar-text').innerText = "Atualizar Registro";
-            document.getElementById('btn-salvar-icon').className = "fa-solid fa-arrows-rotate";
-            document.getElementById('form-title').innerText = "Editar Detalhes do Teste";
-
-            // Preencher Bloco
-            const blocoSelect = document.getElementById('bloco');
-            const blocoOutroInput = document.getElementById('bloco_outro');
-            if (registro.bloco_selecionado) {
-                blocoSelect.value = registro.bloco_selecionado;
-                blocoOutroInput.value = registro.bloco_digitado || '';
-            } else {
-                // Legado ou Fallback para correspondências diretas
-                const options = Array.from(blocoSelect.options).map(o => o.value);
-                if (options.includes(registro.bloco)) {
-                    blocoSelect.value = registro.bloco;
-                    blocoOutroInput.value = '';
-                } else {
-                    blocoSelect.value = 'outros';
-                    blocoOutroInput.value = registro.bloco;
-                }
-            }
-
-            // Preencher Teste ID
-            document.getElementById('identificador_teste').value = registro.identificador_teste || 'Teste 1';
-
-            // Preencher Cultura
-            const culturaSelect = document.getElementById('cultura');
-            const culturaOutroInput = document.getElementById('cultura_outro');
-            if (registro.cultura_selecionada) {
-                culturaSelect.value = registro.cultura_selecionada;
-                culturaOutroInput.value = registro.cultura_digitada || '';
-            } else {
-                if (registro.cultura === 'Brócolis' || registro.cultura === 'Couve Flor') {
-                    culturaSelect.value = registro.cultura;
-                    culturaOutroInput.value = '';
-                } else {
-                    culturaSelect.value = 'outros';
-                    culturaOutroInput.value = registro.cultura || '';
-                }
-            }
-
-            // Preencher Variedade
-            const variedadeSelect = document.getElementById('variedade');
-            const variedadeOutroInput = document.getElementById('variedade_outro');
-            if (registro.variedade_selecionada) {
-                variedadeSelect.value = registro.variedade_selecionada;
-                variedadeOutroInput.value = registro.variedade_digitada || '';
-            } else {
-                const optVariedades = ["Bro 68 syngenta", "TSV Master", "Jiraya", "Pharlap"];
-                if (optVariedades.includes(registro.variedade)) {
-                    variedadeSelect.value = registro.variedade;
-                    variedadeOutroInput.value = '';
-                } else {
-                    variedadeSelect.value = 'outros';
-                    variedadeOutroInput.value = registro.variedade || '';
-                }
-            }
-
-            // Preencher campos remanescentes
-            document.getElementById('aplicacao').value = registro.aplicacao;
-            document.getElementById('total_mudas').value = registro.total_mudas;
-            document.getElementById('total_canteiros').value = registro.total_canteiros;
-            document.getElementById('dosagem').value = registro.dosagem;
-            document.getElementById('unidade').value = registro.unidade;
-
-            // Atualizar visibilidade dos inputs dependentes de "outros" e redefinir o preview
-            handleOutrosTrigger();
-            updatePreview();
-
-            // Mapear visualmente o status
-            updatePreviewStatus();
-
-            // Scroll suave até o topo do formulário
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            showToast('Dados carregados para edição!', 'info');
-        }
-
-        // CARREGA UM REGISTRO PARA VISUALIZAÇÃO DIRETA NO CARD (SEM COLOCAR EM MODO EDICAO)
-        function loadRecordToPreview(id) {
-            const registro = historyData.find(item => item.id === id);
-            if (!registro) return;
-
-            // Carrega temporariamente no form para forçar a renderização do preview
-            document.getElementById('bloco').value = registro.bloco_selecionado || (registro.bloco.length <= 2 ? registro.bloco : 'outros');
-            document.getElementById('bloco_outro').value = registro.bloco_digitado || (registro.bloco.length > 2 ? registro.bloco : '');
-            
-            document.getElementById('identificador_teste').value = registro.identificador_teste || 'Teste 1';
-            
-            document.getElementById('cultura').value = registro.cultura_selecionada || (['Brócolis', 'Couve Flor'].includes(registro.cultura) ? registro.cultura : 'outros');
-            document.getElementById('cultura_outro').value = registro.cultura_digitada || (!['Brócolis', 'Couve Flor'].includes(registro.cultura) ? registro.cultura : '');
-            
-            document.getElementById('variedade').value = registro.variedade_selecionada || (["Bro 68 syngenta", "TSV Master", "Jiraya", "Pharlap"].includes(registro.variedade) ? registro.variedade : 'outros');
-            document.getElementById('variedade_outro').value = registro.variedade_digitada || (!["Bro 68 syngenta", "TSV Master", "Jiraya", "Pharlap"].includes(registro.variedade) ? registro.variedade : '');
-
-            document.getElementById('aplicacao').value = registro.aplicacao;
-            document.getElementById('total_mudas').value = registro.total_mudas;
-            document.getElementById('total_canteiros').value = registro.total_canteiros;
-            document.getElementById('dosagem').value = registro.dosagem;
-            document.getElementById('unidade').value = registro.unidade;
-
-            handleOutrosTrigger();
-            updatePreview();
-            
-            showToast('Visualizando registro no painel lateral.', 'success');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // MODAL DE CONFIRMAÇÃO CUSTOMIZADO
-        function showCustomConfirm(message, onConfirm) {
-            const modal = document.getElementById('confirm-modal');
-            const msgEl = document.getElementById('confirm-modal-message');
-            const btnConfirm = document.getElementById('confirm-modal-confirm');
-            const btnCancel = document.getElementById('confirm-modal-cancel');
-
-            msgEl.innerText = message;
-            modal.classList.remove('hidden');
-
-            // Configurar handlers
-            btnConfirm.onclick = function() {
-                onConfirm();
-                modal.classList.add('hidden');
-            };
-
-            btnCancel.onclick = function() {
-                modal.classList.add('hidden');
-            };
-        }
-
-        // EXCLUSÃO DE UM REGISTRO UNICO
-        function deleteRecord(id) {
-            showCustomConfirm('Deseja realmente excluir este registro de teste permanente do seu histórico?', () => {
-                historyData = historyData.filter(item => item.id !== id);
-                localStorage.setItem('fazenda_oasis_testes', JSON.stringify(historyData));
-                
-                // Se o registro excluído estava sendo editado, limpa o estado de edição
-                if (editingId === id) {
-                    cancelEditing();
-                }
-
-                renderHistoryTable();
-                showToast('Registro removido com sucesso.', 'info');
-            });
-        }
-
-        // LIMPAR HISTÓRICO COMPLETO
-        function clearHistory() {
-            if (historyData.length === 0) {
-                showToast('O histórico já está vazio.', 'info');
-                return;
-            }
-            showCustomConfirm('Deseja apagar TODO o histórico registrado localmente? Esta operação é permanente!', () => {
-                historyData = [];
-                localStorage.removeItem('fazenda_oasis_testes');
-                cancelEditing();
-                renderHistoryTable();
-                showToast('Histórico limpo com sucesso.', 'success');
-            });
-        }
-
-        // RENDERIZAR TABELA DO HISTÓRICO
-        function renderHistoryTable() {
-            const tbody = document.getElementById('history-rows');
-            const noHistoryState = document.getElementById('no-history-state');
-            
-            tbody.innerHTML = '';
-
-            if (historyData.length === 0) {
-                noHistoryState.classList.remove('hidden');
-                return;
-            }
-
-            noHistoryState.classList.add('hidden');
-
-            historyData.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-stone-50/80 transition-colors";
-                
-                const displayBloco = item.bloco.length <= 2 ? `Bloco ${item.bloco}` : item.bloco;
-                const displayTeste = item.identificador_teste || 'Teste 1';
-                const displayCulturaVar = `${item.cultura} (${item.variedade})`;
-
-                tr.innerHTML = `
-                    <td class="py-3.5 px-4 font-medium text-stone-600">${item.data.split(' ')[0]} <span class="text-xs text-stone-400 block">${item.data.split(' ')[1] || ''}</span></td>
-                    <td class="py-3.5 px-4 font-bold text-stone-800">
-                        ${displayBloco} 
-                        <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded block w-max mt-0.5 border border-emerald-100">${displayTeste}</span>
-                    </td>
-                    <td class="py-3.5 px-4 text-stone-700 font-medium">${displayCulturaVar}</td>
-                    <td class="py-3.5 px-4 text-stone-600">${item.aplicacao}</td>
-                    <td class="py-3.5 px-4 text-stone-600">
-                        <span class="font-semibold text-stone-800">${item.total_mudas}</span> mudas / 
-                        <span class="font-semibold text-stone-800">${item.total_canteiros}</span> cant.
-                    </td>
-                    <td class="py-3.5 px-4 text-center font-extrabold text-emerald-800 bg-emerald-50/30">${item.dosagem} ${item.unidade}</td>
-                    <td class="py-3.5 px-4 text-right">
-                        <div class="inline-flex gap-1.5">
-                            <button onclick="loadRecordToPreview(${item.id})" title="Visualizar este registro" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded transition-colors">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                            <button onclick="editRecord(${item.id})" title="Editar este registro" class="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button onclick="deleteRecord(${item.id})" title="Excluir" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded transition-colors">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // EXPORTAÇÃO COMO IMAGEM (JPEG)
-        function exportAsJPEG() {
-            const captureArea = document.getElementById('capture-area');
-            
-            showToast('Preparando imagem para download...', 'info');
-
-            html2canvas(captureArea, {
-                backgroundColor: '#ffffff',
-                scale: 2, // Melhora a qualidade da imagem gerada
-                useCORS: true
-            }).then(canvas => {
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const link = document.createElement('a');
-                
-                // Formatar nome amigável para o arquivo
-                const bVal = document.getElementById('bloco').value;
-                const bOutro = document.getElementById('bloco_outro').value;
-                const blocoNome = (bVal === 'outros') ? bOutro : bVal;
-                const dataStr = new Date().toISOString().split('T')[0];
-                
-                link.download = `Registro_Teste_Fazenda_Oasis_${blocoNome || 'Geral'}_${dataStr}.jpg`;
-                link.href = imgData;
-                link.click();
-                
-                showToast('Imagem JPEG baixada com sucesso!', 'success');
-            }).catch(err => {
-                console.error('Erro na exportação JPEG:', err);
-                showToast('Erro ao exportar imagem.', 'error');
-            });
-        }
-
-        // EXPORTAÇÃO COMO PDF
-        function exportAsPDF() {
-            const captureArea = document.getElementById('capture-area');
-            
-            showToast('Gerando documento PDF...', 'info');
-
-            html2canvas(captureArea, {
-                backgroundColor: '#ffffff',
-                scale: 2,
-                useCORS: true
-            }).then(canvas => {
-                const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                
-                // Dimensões do PDF (A4 é aproximadamente 210x297mm)
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                
-                const imgWidth = 190; // largura útil com margem de 10mm de cada lado
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                // Centralização vertical básica na página
-                const positionY = 25;
-
-                pdf.addImage(imgData, 'JPEG', 10, positionY, imgWidth, imgHeight);
-                
-                // Formatar nome do arquivo PDF
-                const bVal = document.getElementById('bloco').value;
-                const bOutro = document.getElementById('bloco_outro').value;
-                const blocoNome = (bVal === 'outros') ? bOutro : bVal;
-                const dataStr = new Date().toISOString().split('T')[0];
-                
-                pdf.save(`Registro_Teste_Fazenda_Oasis_${blocoNome || 'Geral'}_${dataStr}.pdf`);
-                
-                showToast('Documento PDF baixado com sucesso!', 'success');
-            }).catch(err => {
-                console.error('Erro na exportação PDF:', err);
-                showToast('Erro ao exportar PDF.', 'error');
-            });
-        }
-
-        // TOAST NOTIFICATIONS (Substituto seguro do alert())
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            // Estilos com base no tipo
-            let bgClass = 'bg-stone-800 text-white';
-            let iconClass = 'fa-info-circle text-blue-400';
-            
-            if (type === 'success') {
-                bgClass = 'bg-emerald-900 border-l-4 border-emerald-500 text-emerald-50';
-                iconClass = 'fa-circle-check text-emerald-400';
-            } else if (type === 'error') {
-                bgClass = 'bg-rose-900 border-l-4 border-rose-500 text-rose-50';
-                iconClass = 'fa-triangle-exclamation text-rose-400';
-            } else if (type === 'info') {
-                bgClass = 'bg-stone-900 border-l-4 border-amber-500 text-stone-100';
-                iconClass = 'fa-bolt text-amber-400';
-            }
-
-            toast.className = `${bgClass} p-4 rounded-xl shadow-lg flex items-center gap-3 text-sm font-medium transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto max-w-sm`;
-            toast.innerHTML = `
-                <i class="fa-solid ${iconClass} text-lg shrink-0"></i>
-                <div>${message}</div>
-            `;
-            
-            container.appendChild(toast);
-            
-            // Animation trigger
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
-            // Auto-destruction
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 4000);
-        }
-    </script>
+      } catch (err) {
+        showToast("Erro na exportação geral do relatório.", true);
+      }
+    }
+  </script>
 </body>
 </html>
