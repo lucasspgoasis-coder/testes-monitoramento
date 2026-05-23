@@ -100,7 +100,7 @@
     
     <div class="max-w-7xl mx-auto px-4 py-5 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
       <div class="flex items-center gap-4 sm:gap-6">
-        <!-- Logotipo Oficial sem fundo/contorno ampliado -->
+        <!-- Logo Oficial sem fundo/contorno ampliado -->
         <div class="flex items-center justify-center bg-transparent">
           <img src="https://i.imgur.com/wEozr34.png" alt="Logotipo Fazenda Oásis" crossorigin="anonymous" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=120&q=80';" class="h-20 sm:h-24 w-auto object-contain">
         </div>
@@ -367,7 +367,7 @@
           </span>
           <div>
             <h2 class="font-bold text-base">Histórico de Testes Cadastrados</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Gerenciamento dos testes agrícolas locais</p>
+            <p class="text-xs text-slate-500 mt-0.5">Gerenciamento dos testes agrícolas locais (Ordenados por Bloco e Teste)</p>
           </div>
         </div>
         <div>
@@ -476,7 +476,7 @@
 
       <div class="space-y-4 mb-6">
         <p class="text-slate-600 text-sm leading-relaxed">
-          Este processo compila <strong>todos os registros locais</strong> e gera um documento corporativo profissional completo.
+          Este processo compila <strong>todos os registros locais em ordem alfabética de Bloco e número de Teste</strong> e gera um documento corporativo profissional completo.
         </p>
       </div>
 
@@ -517,7 +517,7 @@
 
       <div class="mb-8">
         <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wide">
-          <i class="fa-solid fa-table text-emerald-700"></i> Lançamentos Consolidados
+          <i class="fa-solid fa-table text-emerald-700"></i> Lançamentos Consolidados (Ordenados)
         </h3>
         <table class="w-full text-left border-collapse border border-slate-200">
           <thead>
@@ -623,9 +623,32 @@
       }
     }
 
+    // Função de ordenação alfabética e numérica inteligente
+    function ordenarRegistros(array) {
+      return array.sort((a, b) => {
+        // Ordenar primeiro por bloco
+        const blocoA = a.bloco.toLowerCase();
+        const blocoB = b.bloco.toLowerCase();
+        
+        // Uso do localeCompare com sensibilidade numérica ("Bloco 2" antes de "Bloco 10")
+        const compBloco = blocoA.localeCompare(blocoB, undefined, { numeric: true, sensitivity: 'base' });
+        
+        if (compBloco !== 0) {
+          return compBloco;
+        }
+        
+        // Se o bloco for igual, ordenar por identificação de teste
+        const testeA = a.identificacao_teste.toLowerCase();
+        const testeB = b.identificacao_teste.toLowerCase();
+        return testeA.localeCompare(testeB, undefined, { numeric: true, sensitivity: 'base' });
+      });
+    }
+
     function carregarRegistros() {
       const dados = localStorage.getItem('fazenda_oasis_testes');
-      registros = dados ? JSON.parse(dados) : [];
+      let bruto = dados ? JSON.parse(dados) : [];
+      // Aplica a ordenação alfabética inteligente
+      registros = ordenarRegistros(bruto);
       atualizarListaHistorico();
     }
 
@@ -738,7 +761,10 @@
         showToast("Novo registro salvo!");
       }
 
+      // Ordenar e guardar no LocalStorage
+      registros = ordenarRegistros(registros);
       localStorage.setItem('fazenda_oasis_testes', JSON.stringify(registros));
+      
       carregarRegistros();
       
       // Ao salvar, mantém os dados do bloco/cultura para facilitar "Adicionar outro Teste" no mesmo bloco
@@ -948,7 +974,7 @@
       document.getElementById('print-indiv-identificador').textContent = identificador;
       document.getElementById('print-indiv-bloco').textContent = bloco;
       document.getElementById('print-indiv-cultura').textContent = cultura;
-      document.getElementById('print-indiv-variedade').textContent = variedad;
+      document.getElementById('print-indiv-variedade').textContent = variedade;
       document.getElementById('print-indiv-aplicacao').textContent = aplicacao;
       document.getElementById('print-indiv-dosagem').textContent = dosagem;
       document.getElementById('print-indiv-canteiros').textContent = canteiros;
@@ -1018,6 +1044,7 @@
       const printLines = document.getElementById('print-geral-linhas');
       printLines.innerHTML = '';
 
+      // Utiliza os registros já ordenados do array principal
       registros.forEach(r => {
         totalCanteiros += Number(r.total_canteiros) || 0;
 
